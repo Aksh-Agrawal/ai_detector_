@@ -2,9 +2,9 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Brain, Shield, Zap, Target, Github, Mail, ArrowRight } from 'lucide-react'
+import { ArrowLeft, Brain, Shield, Zap, Target, Github, Mail } from 'lucide-react'
 
-export default function Home() {
+export default function About() {
   const features = [
     {
       icon: Brain,
@@ -40,6 +40,21 @@ export default function Home() {
   return (
     <main className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
+        {/* Back Button */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="mb-8"
+        >
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-primary-600 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Back to Detector
+          </Link>
+        </motion.div>
+
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -47,19 +62,12 @@ export default function Home() {
           className="text-center mb-16"
         >
           <h1 className="text-5xl font-bold gradient-text mb-4">
-            AI Content Detector
+            About AI Content Detector
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             A powerful tool designed to identify AI-generated content across text, images, and videos
             using cutting-edge machine learning technology.
           </p>
-          <Link
-            href="/detector"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-xl font-medium hover:shadow-lg transform hover:scale-105 transition-all"
-          >
-            Start Detecting
-            <ArrowRight className="w-5 h-5" />
-          </Link>
         </motion.div>
 
         {/* Mission */}
