@@ -1,41 +1,53 @@
-'use client'
+"use client";
 
-import { motion } from 'framer-motion'
-import Link from 'next/link'
-import { Brain, Shield, Zap, Target, Github, Mail, ArrowRight } from 'lucide-react'
+import { motion } from "framer-motion";
+import Link from "next/link";
+import {
+  Brain,
+  Shield,
+  Zap,
+  Target,
+  Github,
+  Mail,
+  ArrowRight,
+} from "lucide-react";
 
 export default function Home() {
   const features = [
     {
       icon: Brain,
-      title: 'Advanced AI Models',
-      description: 'Powered by state-of-the-art machine learning models including transformer-based text analysis and vision transformers for image/video detection.',
+      title: "Advanced AI Models",
+      description:
+        "Powered by state-of-the-art machine learning models including transformer-based text analysis and vision transformers for image/video detection.",
     },
     {
       icon: Shield,
-      title: 'Accurate Detection',
-      description: 'High-precision algorithms trained on extensive datasets to distinguish between AI-generated and human-created content.',
+      title: "Accurate Detection",
+      description:
+        "High-precision algorithms trained on extensive datasets to distinguish between AI-generated and human-created content.",
     },
     {
       icon: Zap,
-      title: 'Real-time Analysis',
-      description: 'Get instant results with our optimized processing pipeline. Analyze text, images, and videos in seconds.',
+      title: "Real-time Analysis",
+      description:
+        "Get instant results with our optimized processing pipeline. Analyze text, images, and videos in seconds.",
     },
     {
       icon: Target,
-      title: 'Multi-format Support',
-      description: 'Comprehensive detection across multiple content types - text documents, images (PNG, JPG, etc.), and video files.',
+      title: "Multi-format Support",
+      description:
+        "Comprehensive detection across multiple content types - text documents, images (PNG, JPG, etc.), and video files.",
     },
-  ]
+  ];
 
   const technologies = [
-    { name: 'Next.js', category: 'Frontend Framework' },
-    { name: 'Flask', category: 'Backend API' },
-    { name: 'PyTorch', category: 'Deep Learning' },
-    { name: 'Transformers', category: 'AI Models' },
-    { name: 'Scikit-learn', category: 'ML Pipeline' },
-    { name: 'OpenCV', category: 'Video Processing' },
-  ]
+    { name: "Next.js", category: "Frontend Framework" },
+    { name: "Flask", category: "Backend API" },
+    { name: "PyTorch", category: "Deep Learning" },
+    { name: "Transformers", category: "AI Models" },
+    { name: "Scikit-learn", category: "ML Pipeline" },
+    { name: "OpenCV", category: "Video Processing" },
+  ];
 
   return (
     <main className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
@@ -50,8 +62,9 @@ export default function Home() {
             AI Content Detector
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">
-            A powerful tool designed to identify AI-generated content across text, images, and videos
-            using cutting-edge machine learning technology.
+            A powerful tool designed to identify AI-generated content across
+            text, images, and videos using cutting-edge machine learning
+            technology.
           </p>
           <Link
             href="/detector"
@@ -71,10 +84,11 @@ export default function Home() {
         >
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Mission</h2>
           <p className="text-gray-700 leading-relaxed">
-            In an era where AI-generated content is becoming increasingly sophisticated, 
-            our mission is to provide transparent and reliable tools for content verification. 
-            We believe in empowering users with the ability to distinguish between human-created 
-            and AI-generated content, fostering trust and authenticity in digital media.
+            In an era where AI-generated content is becoming increasingly
+            sophisticated, our mission is to provide transparent and reliable
+            tools for content verification. We believe in empowering users with
+            the ability to distinguish between human-created and AI-generated
+            content, fostering trust and authenticity in digital media.
           </p>
         </motion.div>
 
@@ -85,10 +99,12 @@ export default function Home() {
           transition={{ delay: 0.2 }}
           className="mb-12"
         >
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Key Features</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+            Key Features
+          </h2>
           <div className="grid md:grid-cols-2 gap-6">
             {features.map((feature, index) => {
-              const Icon = feature.icon
+              const Icon = feature.icon;
               return (
                 <motion.div
                   key={index}
@@ -111,7 +127,7 @@ export default function Home() {
                     </div>
                   </div>
                 </motion.div>
-              )
+              );
             })}
           </div>
         </motion.div>
@@ -149,16 +165,21 @@ export default function Home() {
           transition={{ delay: 0.8 }}
           className="glass-effect rounded-2xl p-8 mb-12"
         >
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">How It Works</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            How It Works
+          </h2>
           <div className="space-y-4">
             <div className="flex gap-4">
               <div className="flex-shrink-0 w-8 h-8 bg-primary-500 text-white rounded-full flex items-center justify-center font-bold">
                 1
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-1">Upload Content</h3>
+                <h3 className="font-semibold text-gray-900 mb-1">
+                  Upload Content
+                </h3>
                 <p className="text-gray-600 text-sm">
-                  Provide text, upload an image, or submit a video file for analysis.
+                  Provide text, upload an image, or submit a video file for
+                  analysis.
                 </p>
               </div>
             </div>
@@ -167,9 +188,12 @@ export default function Home() {
                 2
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-1">AI Analysis</h3>
+                <h3 className="font-semibold text-gray-900 mb-1">
+                  AI Analysis
+                </h3>
                 <p className="text-gray-600 text-sm">
-                  Our models process the content using advanced neural networks trained to detect AI patterns.
+                  Our models process the content using advanced neural networks
+                  trained to detect AI patterns.
                 </p>
               </div>
             </div>
@@ -178,9 +202,12 @@ export default function Home() {
                 3
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-1">Get Results</h3>
+                <h3 className="font-semibold text-gray-900 mb-1">
+                  Get Results
+                </h3>
                 <p className="text-gray-600 text-sm">
-                  Receive a confidence score indicating the likelihood of AI generation vs human creation.
+                  Receive a confidence score indicating the likelihood of AI
+                  generation vs human creation.
                 </p>
               </div>
             </div>
@@ -195,7 +222,8 @@ export default function Home() {
           className="text-center text-gray-500 text-sm"
         >
           <p className="mb-4">
-            Built with passion for transparency and authenticity in digital content.
+            Built with passion for transparency and authenticity in digital
+            content.
           </p>
           <div className="flex items-center justify-center gap-6">
             <a
@@ -218,5 +246,5 @@ export default function Home() {
         </motion.div>
       </div>
     </main>
-  )
+  );
 }
