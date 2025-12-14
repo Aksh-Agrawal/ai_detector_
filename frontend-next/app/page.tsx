@@ -20,9 +20,14 @@ export default function Home() {
 
   // Generate particles once to prevent re-rendering on hover
   const particles = useMemo(() => {
-    const colors = ['bg-orange-400', 'bg-green-400', 'bg-blue-400', 'bg-purple-400'];
-    const sizes = ['w-3 h-3', 'w-4 h-4', 'w-2 h-2'];
-    
+    const colors = [
+      "bg-orange-400",
+      "bg-green-400",
+      "bg-blue-400",
+      "bg-purple-400",
+    ];
+    const sizes = ["w-3 h-3", "w-4 h-4", "w-2 h-2"];
+
     return [...Array(30)].map((_, i) => ({
       id: i,
       color: colors[i % colors.length],
@@ -109,7 +114,7 @@ export default function Home() {
             style={{
               left: `${particle.left}%`,
               top: `${particle.top}%`,
-              filter: 'blur(1px)',
+              filter: "blur(1px)",
             }}
           />
         ))}

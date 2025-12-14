@@ -15,9 +15,9 @@ export default function Detector() {
 
   // Generate lighter background particles
   const particles = useMemo(() => {
-    const colors = ['bg-orange-400', 'bg-green-400', 'bg-blue-400'];
-    const sizes = ['w-2 h-2', 'w-3 h-3'];
-    
+    const colors = ["bg-orange-400", "bg-green-400", "bg-blue-400"];
+    const sizes = ["w-2 h-2", "w-3 h-3"];
+
     return [...Array(15)].map((_, i) => ({
       id: i,
       color: colors[i % colors.length],
@@ -60,7 +60,7 @@ export default function Detector() {
             style={{
               left: `${particle.left}%`,
               top: `${particle.top}%`,
-              filter: 'blur(2px)',
+              filter: "blur(2px)",
             }}
           />
         ))}
