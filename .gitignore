@@ -1,0 +1,49 @@
+# Virtual Environment
+env/
+venv/
+ENV/
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment variables
+.env
+.env.local
+
+# Node modules (if using npm for frontend)
+node_modules/
+package-lock.json
+
+# Temporary files
+*.tmp
+temp/
+tmp/
+
+# Model files (optional - uncomment if models are large and stored elsewhere)
+# *.pkl
+# *.pth
+# *.h5

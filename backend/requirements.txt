@@ -1,0 +1,8 @@
+flask
+flask-cors
+transformers
+torch
+opencv-python
+pillow
+numpy
+safetensors
