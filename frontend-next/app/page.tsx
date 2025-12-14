@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Brain,
   Shield,
@@ -17,6 +17,25 @@ import {
 
 export default function Home() {
   const [hoveredFeature, setHoveredFeature] = useState<number | null>(null);
+
+  // Generate particles once to prevent re-rendering on hover
+  const particles = useMemo(() => {
+    const colors = ['bg-orange-400', 'bg-green-400', 'bg-blue-400', 'bg-purple-400'];
+    const sizes = ['w-3 h-3', 'w-4 h-4', 'w-2 h-2'];
+    
+    return [...Array(30)].map((_, i) => ({
+      id: i,
+      color: colors[i % colors.length],
+      size: sizes[i % sizes.length],
+      x1: Math.random() * 1200,
+      x2: Math.random() * 1200,
+      y1: Math.random() * 800,
+      y2: Math.random() * 800,
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      duration: 8 + Math.random() * 15,
+    }));
+  }, []);
 
   const features = [
     {
@@ -72,24 +91,25 @@ export default function Home() {
     <main className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Floating background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(20)].map((_, i) => (
+        {particles.map((particle) => (
           <motion.div
-            key={i}
-            className="absolute w-2 h-2 bg-orange-200 rounded-full"
+            key={particle.id}
+            className={`absolute ${particle.color} ${particle.size} rounded-full`}
             animate={{
-              x: [Math.random() * 1200, Math.random() * 1200],
-              y: [Math.random() * 800, Math.random() * 800],
-              scale: [1, 1.5, 1],
-              opacity: [0.2, 0.5, 0.2],
+              x: [particle.x1, particle.x2],
+              y: [particle.y1, particle.y2],
+              scale: [1, 2, 1],
+              opacity: [0.4, 0.8, 0.4],
             }}
             transition={{
-              duration: 10 + Math.random() * 20,
+              duration: particle.duration,
               repeat: Infinity,
-              ease: "linear",
+              ease: "easeInOut",
             }}
             style={{
-              left: Math.random() * 100 + "%",
-              top: Math.random() * 100 + "%",
+              left: `${particle.left}%`,
+              top: `${particle.top}%`,
+              filter: 'blur(1px)',
             }}
           />
         ))}

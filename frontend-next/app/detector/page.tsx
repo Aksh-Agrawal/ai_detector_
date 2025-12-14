@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FileText, Image, Video, Sparkles, ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -13,6 +13,25 @@ type Tab = "text" | "image" | "video";
 export default function Detector() {
   const [activeTab, setActiveTab] = useState<Tab>("text");
 
+  // Generate lighter background particles
+  const particles = useMemo(() => {
+    const colors = ['bg-orange-400', 'bg-green-400', 'bg-blue-400'];
+    const sizes = ['w-2 h-2', 'w-3 h-3'];
+    
+    return [...Array(15)].map((_, i) => ({
+      id: i,
+      color: colors[i % colors.length],
+      size: sizes[i % sizes.length],
+      x1: Math.random() * 1200,
+      x2: Math.random() * 1200,
+      y1: Math.random() * 800,
+      y2: Math.random() * 800,
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      duration: 10 + Math.random() * 15,
+    }));
+  }, []);
+
   const tabs = [
     { id: "text" as Tab, label: "Text", icon: FileText },
     { id: "image" as Tab, label: "Image", icon: Image },
@@ -20,8 +39,34 @@ export default function Detector() {
   ];
 
   return (
-    <main className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-5xl mx-auto">
+    <main className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Floating background elements - lighter version */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {particles.map((particle) => (
+          <motion.div
+            key={particle.id}
+            className={`absolute ${particle.color} ${particle.size} rounded-full`}
+            animate={{
+              x: [particle.x1, particle.x2],
+              y: [particle.y1, particle.y2],
+              scale: [1, 1.5, 1],
+              opacity: [0.3, 0.5, 0.3],
+            }}
+            transition={{
+              duration: particle.duration,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            style={{
+              left: `${particle.left}%`,
+              top: `${particle.top}%`,
+              filter: 'blur(2px)',
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="max-w-5xl mx-auto relative z-10">
         {/* Back Button */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -48,9 +93,9 @@ export default function Detector() {
               animate={{ rotate: 360 }}
               transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
             >
-              <Sparkles className="w-10 h-10 text-primary-500" />
+              <Sparkles className="w-10 h-10 text-orange-500" />
             </motion.div>
-            <h1 className="text-5xl font-bold gradient-text">
+            <h1 className="text-5xl font-bold text-gray-900">
               AI Content Detector
             </h1>
           </div>
