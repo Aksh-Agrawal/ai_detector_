@@ -9,9 +9,17 @@ import ImageDetector from "@/components/ImageDetector";
 import VideoDetector from "@/components/VideoDetector";
 
 type Tab = "text" | "image" | "video";
+type DetectionResult = {
+  ai: number;
+  human: number;
+  type: "text" | "image" | "video";
+  content?: string;
+};
 
 export default function Detector() {
   const [activeTab, setActiveTab] = useState<Tab>("text");
+  const [detectionResult, setDetectionResult] =
+    useState<DetectionResult | null>(null);
 
   // Generate lighter background particles
   const particles = useMemo(() => {
@@ -156,9 +164,15 @@ export default function Detector() {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
           >
-            {activeTab === "text" && <TextDetector />}
-            {activeTab === "image" && <ImageDetector />}
-            {activeTab === "video" && <VideoDetector />}
+            {activeTab === "text" && (
+              <TextDetector onResult={setDetectionResult} />
+            )}
+            {activeTab === "image" && (
+              <ImageDetector onResult={setDetectionResult} />
+            )}
+            {activeTab === "video" && (
+              <VideoDetector onResult={setDetectionResult} />
+            )}
           </motion.div>
         </AnimatePresence>
 

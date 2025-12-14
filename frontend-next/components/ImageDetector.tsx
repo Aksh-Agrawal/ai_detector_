@@ -5,11 +5,21 @@ import { motion } from "framer-motion";
 import { Upload, Loader2, User, Bot, X } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
+// @ts-ignore
 import ResultCard from "./ResultCard";
 
 const API_URL = "http://127.0.0.1:8000";
 
-export default function ImageDetector() {
+interface ImageDetectorProps {
+  onResult?: (result: {
+    ai: number;
+    human: number;
+    type: "image";
+    content?: string;
+  }) => void;
+}
+
+export default function ImageDetector({ onResult }: ImageDetectorProps) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -42,7 +52,17 @@ export default function ImageDetector() {
       const formData = new FormData();
       formData.append("image", file);
       const response = await axios.post(`${API_URL}/detect/image`, formData);
-      setResult(response.data);
+      const detectionResult = response.data;
+      setResult(detectionResult);
+
+      // Pass result to parent
+      if (onResult) {
+        onResult({
+          ...detectionResult,
+          type: "image",
+          content: file.name,
+        });
+      }
     } catch (error) {
       console.error("Error:", error);
       alert("Failed to analyze image. Make sure the backend is running.");

@@ -5,11 +5,21 @@ import { motion } from "framer-motion";
 import { Upload, Loader2, User, Bot, X, Film } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
+// @ts-ignore
 import ResultCard from "./ResultCard";
 
 const API_URL = "http://127.0.0.1:8000";
 
-export default function VideoDetector() {
+interface VideoDetectorProps {
+  onResult?: (result: {
+    ai: number;
+    human: number;
+    type: "video";
+    content?: string;
+  }) => void;
+}
+
+export default function VideoDetector({ onResult }: VideoDetectorProps) {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{
@@ -40,7 +50,17 @@ export default function VideoDetector() {
       const formData = new FormData();
       formData.append("video", file);
       const response = await axios.post(`${API_URL}/detect/video`, formData);
-      setResult(response.data);
+      const detectionResult = response.data;
+      setResult(detectionResult);
+
+      // Pass result to parent
+      if (onResult) {
+        onResult({
+          ...detectionResult,
+          type: "video",
+          content: file.name,
+        });
+      }
     } catch (error) {
       console.error("Error:", error);
       alert("Failed to analyze video. Make sure the backend is running.");

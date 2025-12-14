@@ -13,6 +13,7 @@ import {
   ArrowRight,
   Sparkles,
   CheckCircle2,
+  Mic,
 } from "lucide-react";
 
 export default function Home() {
@@ -74,6 +75,14 @@ export default function Home() {
         "Comprehensive detection across multiple content types - text documents, images (PNG, JPG, etc.), and video files.",
       color: "#a855f7",
       bgColor: "#faf5ff",
+    },
+    {
+      icon: Mic,
+      title: "Voice Assistant",
+      description:
+        "Interactive multilingual voice assistant to explain detection results, guide you through features, and answer questions in 10+ languages.",
+      color: "#ec4899",
+      bgColor: "#fdf2f8",
     },
   ];
 
@@ -181,20 +190,32 @@ export default function Home() {
             })}
           </div>
 
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Link
-              href="/detector"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-orange-500 text-white rounded-xl font-medium hover:bg-orange-600 hover:shadow-xl transition-all"
-            >
-              Start Detecting
-              <motion.div
-                animate={{ x: [0, 5, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
+          <div className="flex gap-4 justify-center">
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Link
+                href="/detector"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-orange-500 text-white rounded-xl font-medium hover:bg-orange-600 hover:shadow-xl transition-all"
               >
-                <ArrowRight className="w-5 h-5" />
-              </motion.div>
-            </Link>
-          </motion.div>
+                Start Detecting
+                <motion.div
+                  animate={{ x: [0, 5, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
+                  <ArrowRight className="w-5 h-5" />
+                </motion.div>
+              </Link>
+            </motion.div>
+
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Link
+                href="/voice"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-pink-500 text-white rounded-xl font-medium hover:bg-pink-600 hover:shadow-xl transition-all"
+              >
+                <Mic className="w-5 h-5" />
+                Voice Assistant
+              </Link>
+            </motion.div>
+          </div>
         </motion.div>
 
         {/* Mission */}
