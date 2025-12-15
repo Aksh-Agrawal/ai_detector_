@@ -63,12 +63,14 @@ export default function DocumentDetector() {
     isConnected,
     isListening,
     isSpeaking,
+    currentLanguage,
     startSession,
     endSession,
     sendTextMessage,
     setDetectionResults,
     startListening,
     stopListening,
+    toggleLanguage,
   } = useVoiceChat();
 
   const handleFileSelect = (file: File) => {
@@ -170,7 +172,7 @@ export default function DocumentDetector() {
 
   const handleStartVoice = async () => {
     if (!isConnected) {
-      await startSession();
+      await startSession(currentLanguage);
     }
   };
 
@@ -331,20 +333,44 @@ export default function DocumentDetector() {
                   Voice Assistant
                 </h3>
                 <p className="text-xs text-gray-500">
-                  {isConnected ? "Connected" : "Click to start"}
+                  {isConnected ? `Connected • ${currentLanguage === "hi-IN" ? "🇮🇳 हिंदी" : "🇮🇳 English"}` : "Click to start"}
                 </p>
               </div>
             </div>
-            <VoiceButton
-              isConnected={isConnected}
-              isListening={isListening}
-              isSpeaking={isSpeaking}
-              onStart={handleStartVoice}
-              onEnd={endSession}
-              onToggleListening={() =>
-                isListening ? stopListening() : startListening()
-              }
-            />
+            <div className="flex items-center gap-2">
+              {!isConnected && (
+                <>
+                  <button
+                    onClick={toggleLanguage}
+                    className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-all border border-gray-300"
+                    title="Toggle Language"
+                  >
+                    {currentLanguage === "hi-IN" ? "Switch to English" : "हिंदी में बदलें"}
+                  </button>
+                  <button
+                    onClick={handleStartVoice}
+                    className="px-4 py-2 bg-gradient-to-r from-orange-500 to-purple-500 text-white rounded-lg font-medium hover:from-orange-600 hover:to-purple-600 transition-all shadow-md hover:shadow-lg"
+                  >
+                    Start Voice Assistant
+                  </button>
+                </>
+              )}
+              {isConnected && (
+                <>
+                  <VoiceButton
+                    isConnected={isConnected}
+                    isListening={isListening}
+                    onClick={() => isListening ? stopListening() : startListening()}
+                  />
+                  <button
+                    onClick={endSession}
+                    className="px-3 py-2 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 transition-colors"
+                  >
+                    End
+                  </button>
+                </>
+              )}
+            </div>
           </div>
 
           {isConnected ? (

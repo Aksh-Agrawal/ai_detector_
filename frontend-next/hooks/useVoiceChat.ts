@@ -22,12 +22,14 @@ export interface UseVoiceChatReturn {
   isConnected: boolean;
   isListening: boolean;
   isSpeaking: boolean;
+  currentLanguage: string;
   startSession: (language?: string, voice?: string) => Promise<void>;
   endSession: () => Promise<void>;
   sendTextMessage: (text: string, context?: any) => Promise<void>;
   startListening: () => void;
   stopListening: () => void;
   setDetectionResults: (results: any) => Promise<void>;
+  toggleLanguage: () => void;
 }
 
 export function useVoiceChat({
@@ -39,6 +41,7 @@ export function useVoiceChat({
   const [isConnected, setIsConnected] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [currentLanguage, setCurrentLanguage] = useState<string>("en-IN");
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const recognitionRef = useRef<any>(null);
@@ -60,9 +63,20 @@ export function useVoiceChat({
 
   // Start new session
   const startSession = useCallback(
-    async (language: string = "en-IN", voice: string = "meera") => {
+    async (language?: string, voice: string = "meera") => {
       try {
-        console.log("Starting voice session...");
+        // Auto-detect language from browser if not specified
+        let detectedLanguage = language;
+        if (!detectedLanguage) {
+          const browserLang = navigator.language.toLowerCase();
+          if (browserLang.includes('hi')) {
+            detectedLanguage = "hi-IN";
+          } else {
+            detectedLanguage = "en-IN";
+          }
+        }
+        setCurrentLanguage(detectedLanguage);
+        console.log(`Starting voice session with language: ${detectedLanguage}`);
 
         // Create session on server
         const response = await fetch(
@@ -71,7 +85,7 @@ export function useVoiceChat({
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              language,
+              language: detectedLanguage,
               voice,
             }),
           }
@@ -379,7 +393,7 @@ export function useVoiceChat({
                 body: JSON.stringify({
                   session_id: sessionId,
                   audio: base64Audio,
-                  language: "en-IN", // Change to "hi-IN" for Hindi
+                  language: currentLanguage, // Auto-detected: en-IN or hi-IN
                 }),
               }
             );
@@ -471,10 +485,10 @@ export function useVoiceChat({
 
       recognition.continuous = false;
       recognition.interimResults = false;
-      recognition.lang = "en-IN"; // English (India) - change to "hi-IN" for Hindi
+      recognition.lang = currentLanguage; // Use current language (en-IN or hi-IN)
 
       recognition.onstart = () => {
-        console.log("🎤 Browser voice recognition started");
+        console.log(`🎤 Browser voice recognition started (${currentLanguage})`);
         setIsListening(true);
       };
 
@@ -537,18 +551,27 @@ export function useVoiceChat({
     console.log("Stopped listening");
   }, []);
 
+  // Toggle language between English and Hindi
+  const toggleLanguage = useCallback(() => {
+    const newLanguage = currentLanguage === "hi-IN" ? "en-IN" : "hi-IN";
+    setCurrentLanguage(newLanguage);
+    console.log(`Language toggled to: ${newLanguage}`);
+  }, [currentLanguage]);
+
   return {
     sessionId,
     messages,
     isConnected,
     isListening,
     isSpeaking,
+    currentLanguage,
     startSession,
     endSession,
     sendTextMessage,
     startListening,
     stopListening,
     setDetectionResults,
+    toggleLanguage,
   };
 }
 
