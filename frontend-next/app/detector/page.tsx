@@ -15,6 +15,7 @@ import TextDetector from "@/components/TextDetector";
 import ImageDetector from "@/components/ImageDetector";
 import VideoDetector from "@/components/VideoDetector";
 import DocumentDetector from "@/components/DocumentDetector";
+import FloatingVoiceChat from "@/components/FloatingVoiceChat";
 
 type Tab = "text" | "image" | "video" | "document";
 type DetectionResult = {
@@ -196,6 +197,9 @@ export default function Detector() {
           <p>Powered by advanced machine learning models</p>
         </motion.div>
       </div>
+
+      {/* Floating Voice Chat */}
+      <FloatingVoiceChat />
     </main>
   );
 }
