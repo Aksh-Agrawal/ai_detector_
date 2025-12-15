@@ -340,7 +340,7 @@ async def speech_to_text(request: AudioInputRequest):
             
             payload = {
                 "language_code": request.language,
-                "model": "saaras:v1"
+                "model": "saarika:v2"
             }
             
             # For STT, we need to send audio as file, not JSON
@@ -352,7 +352,7 @@ async def speech_to_text(request: AudioInputRequest):
             data = aiohttp.FormData()
             data.add_field('file', audio_bytes, filename='audio.wav', content_type='audio/wav')
             data.add_field('language_code', request.language)
-            data.add_field('model', 'saaras:v1')
+            data.add_field('model', 'saarika:v2')
             
             async with http_session.post(
                 f"{sarvam_base_url}/speech-to-text",

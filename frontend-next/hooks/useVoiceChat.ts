@@ -329,33 +329,48 @@ export function useVoiceChat({
 
     try {
       // Request microphone access
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          channelCount: 1,
+          sampleRate: 16000,
+          echoCancellation: true,
+          noiseSuppression: true,
+        },
+      });
 
       // Create MediaRecorder to capture audio
-      const mediaRecorder = new MediaRecorder(stream);
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: "audio/webm",
+      });
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           audioChunksRef.current.push(event.data);
+          console.log(`Audio chunk received: ${event.data.size} bytes`);
         }
       };
 
       mediaRecorder.onstop = async () => {
+        console.log(`Total chunks: ${audioChunksRef.current.length}`);
+
         // Combine audio chunks
         const audioBlob = new Blob(audioChunksRef.current, {
-          type: "audio/wav",
+          type: "audio/webm",
         });
+
+        console.log(`Audio blob size: ${audioBlob.size} bytes`);
 
         // Convert to base64
         const reader = new FileReader();
         reader.onloadend = async () => {
           const base64Audio = reader.result?.toString().split(",")[1] || "";
+          console.log(`Base64 audio length: ${base64Audio.length}`);
 
           try {
             // Try Sarvam AI STT first (supports Hindi and other Indian languages)
-            console.log("Sending audio to Sarvam AI STT...");
+            console.log("📤 Sending audio to Sarvam AI STT...");
             const sttResponse = await fetch(
               "http://localhost:8001/api/voice/stt",
               {
@@ -364,7 +379,7 @@ export function useVoiceChat({
                 body: JSON.stringify({
                   session_id: sessionId,
                   audio: base64Audio,
-                  language: "hi-IN", // Hindi - change to "en-IN" for English
+                  language: "en-IN", // Change to "hi-IN" for Hindi
                 }),
               }
             );
@@ -376,10 +391,16 @@ export function useVoiceChat({
 
               if (transcript) {
                 sendTextMessage(transcript);
+              } else {
+                console.warn("Empty transcript received");
               }
             } else {
               const errorText = await sttResponse.text();
-              console.error("Sarvam STT failed:", errorText);
+              console.error(
+                "❌ Sarvam STT failed:",
+                sttResponse.status,
+                errorText
+              );
 
               // Fallback to browser speech recognition
               console.log("⚠️ Falling back to browser speech recognition");
@@ -398,11 +419,22 @@ export function useVoiceChat({
         stream.getTracks().forEach((track) => track.stop());
       };
 
-      mediaRecorder.start();
+      // Start recording
+      mediaRecorder.start(100); // Collect data every 100ms
       setIsListening(true);
-      console.log(
-        "🎤 Recording started (say something in Hindi or English)..."
-      );
+      console.log("🎤 Recording started - click mic button again to stop...");
+
+      // Auto-stop after 30 seconds as safety measure
+      setTimeout(() => {
+        if (
+          mediaRecorderRef.current &&
+          mediaRecorderRef.current.state === "recording"
+        ) {
+          console.log("⏱️ Auto-stopping recording after 30 seconds");
+          mediaRecorderRef.current.stop();
+          setIsListening(false);
+        }
+      }, 30000);
     } catch (error) {
       console.error("Error accessing microphone:", error);
       if (onError) {
@@ -410,6 +442,7 @@ export function useVoiceChat({
       }
 
       // Fallback to browser speech recognition if mic access fails
+      console.log("⚠️ Mic access failed, using browser speech recognition");
       useBrowserSpeechRecognition();
     }
   }, [sessionId, isConnected, sendTextMessage, onError]);
@@ -438,10 +471,10 @@ export function useVoiceChat({
 
       recognition.continuous = false;
       recognition.interimResults = false;
-      recognition.lang = "hi-IN"; // Hindi language
+      recognition.lang = "en-IN"; // English (India) - change to "hi-IN" for Hindi
 
       recognition.onstart = () => {
-        console.log("Voice recognition started");
+        console.log("🎤 Browser voice recognition started");
         setIsListening(true);
       };
 
