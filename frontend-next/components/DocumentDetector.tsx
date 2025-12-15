@@ -2,7 +2,15 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, FileText, Loader2, X, File, FileCheck, Mic } from "lucide-react";
+import {
+  Upload,
+  FileText,
+  Loader2,
+  X,
+  File,
+  FileCheck,
+  Mic,
+} from "lucide-react";
 import axios from "axios";
 import DocumentResult from "./DocumentResult";
 import VoiceChat from "./VoiceChat";
@@ -229,13 +237,13 @@ export default function DocumentDetector() {
           </div>
         ) : (
           <div className="space-y-4">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-green-50 border-2 border-orange-200 rounded-xl"
             >
               <div className="flex items-center gap-3">
-                <motion.span 
+                <motion.span
                   className="text-3xl"
                   animate={{ rotate: [0, -10, 10, 0] }}
                   transition={{ duration: 0.5 }}

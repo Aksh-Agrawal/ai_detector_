@@ -51,7 +51,7 @@ export default function DocumentResult({ result }: DocumentResultProps) {
   const { document_info, detection_results, page_analysis, text_preview } =
     result;
   const isAI = detection_results.ai_score > detection_results.human_score;
-  
+
   const [displayAI, setDisplayAI] = useState(0);
   const [displayHuman, setDisplayHuman] = useState(0);
 
@@ -243,7 +243,9 @@ export default function DocumentResult({ result }: DocumentResultProps) {
 
         <div className="mb-3 pb-3 border-b border-gray-200">
           <p className="text-sm text-gray-600 mb-1">Filename</p>
-          <p className="text-base font-semibold text-gray-800">{document_info.filename}</p>
+          <p className="text-base font-semibold text-gray-800">
+            {document_info.filename}
+          </p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -346,7 +348,10 @@ export default function DocumentResult({ result }: DocumentResultProps) {
                           <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${page.ai_score}%` }}
-                            transition={{ duration: 0.8, delay: 0.1 * page.page }}
+                            transition={{
+                              duration: 0.8,
+                              delay: 0.1 * page.page,
+                            }}
                             className="h-full bg-orange-500 rounded-full"
                           />
                         </div>
@@ -362,7 +367,10 @@ export default function DocumentResult({ result }: DocumentResultProps) {
                           <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${page.human_score}%` }}
-                            transition={{ duration: 0.8, delay: 0.1 * page.page }}
+                            transition={{
+                              duration: 0.8,
+                              delay: 0.1 * page.page,
+                            }}
                             className="h-full bg-green-500 rounded-full"
                           />
                         </div>
