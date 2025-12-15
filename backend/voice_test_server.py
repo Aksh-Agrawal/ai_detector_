@@ -27,6 +27,15 @@ try:
 except ImportError:
     GEMINI_AVAILABLE = False
 
+# Try to import Sarvam AI client
+try:
+    import aiohttp
+    SARVAM_API_KEY = os.getenv("SARVAM_API_KEY")
+    SARVAM_AVAILABLE = bool(SARVAM_API_KEY)
+except ImportError:
+    SARVAM_AVAILABLE = False
+    SARVAM_API_KEY = None
+
 # Setup logging
 logging.basicConfig(
     level=logging.INFO,
@@ -37,6 +46,7 @@ logger = logging.getLogger(__name__)
 # Global instances
 session_manager: Optional[SessionManager] = None
 gemini_client: Optional[Any] = None
+sarvam_base_url = "https://api.sarvam.ai"
 
 
 @asynccontextmanager
@@ -62,6 +72,12 @@ async def lifespan(app: FastAPI):
     else:
         logger.info("Gemini API key not found - using mock responses")
     
+    # Log Sarvam AI status
+    if SARVAM_AVAILABLE:
+        logger.info("Sarvam AI enabled - multilingual voice support active!")
+    else:
+        logger.info("Sarvam AI not configured - using browser speech synthesis")
+    
     logger.info("Test server started successfully")
     
     yield
@@ -83,7 +99,7 @@ app = FastAPI(
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:8000"],
+    allow_origins=["http://localhost:3000", "http://localhost:3001", "http://localhost:8000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -94,7 +110,7 @@ app.add_middleware(
 class CreateSessionRequest(BaseModel):
     user_id: Optional[str] = None
     language: str = "en-IN"
-    voice: str = "meera"
+    voice: str = "anushka"  # Sarvam AI female voice
 
 
 class TextInputRequest(BaseModel):
@@ -107,16 +123,35 @@ class SetResultsRequest(BaseModel):
     results: Dict[str, Any]
 
 
+class AudioInputRequest(BaseModel):
+    session_id: str
+    audio: str  # Base64 encoded audio
+    language: str = "en-IN"
+
+
+class TTSRequest(BaseModel):
+    text: str
+    language: str = "en-IN"
+    voice: str = "anushka"  # Sarvam AI female voice
+
+
 # Endpoints
 @app.get("/")
 async def root():
     """Service information"""
     return {
         "service": "Voice Agent Test Server",
-        "version": "1.0.0",
+        "version": "2.0.0",
         "status": "online",
-        "mode": "test",
-        "note": "No API keys required for testing"
+        "gemini": GEMINI_AVAILABLE,
+        "sarvam": SARVAM_AVAILABLE,
+        "features": {
+            "text_chat": True,
+            "voice_input": SARVAM_AVAILABLE,
+            "voice_output": SARVAM_AVAILABLE,
+            "multilingual": SARVAM_AVAILABLE,
+            "ai_reasoning": GEMINI_AVAILABLE
+        }
     }
 
 
@@ -125,7 +160,9 @@ async def health():
     """Health check"""
     return {
         "status": "healthy",
-        "session_manager": "connected" if session_manager else "disconnected"
+        "session_manager": "connected" if session_manager else "disconnected",
+        "gemini": GEMINI_AVAILABLE,
+        "sarvam": SARVAM_AVAILABLE
     }
 
 
@@ -275,6 +312,145 @@ async def set_detection_results(request: SetResultsRequest):
         raise HTTPException(status_code=404, detail="Session not found")
     
     return {"message": "Detection results set", "session_id": request.session_id}
+
+
+@app.post("/api/voice/stt")
+async def speech_to_text(request: AudioInputRequest):
+    """Convert speech to text using Sarvam AI STT"""
+    if not SARVAM_AVAILABLE:
+        raise HTTPException(
+            status_code=503,
+            detail="Sarvam AI not configured. Add SARVAM_API_KEY to use multilingual speech-to-text."
+        )
+    
+    if not session_manager:
+        raise HTTPException(status_code=503, detail="Session manager not available")
+    
+    session = await session_manager.get_session(request.session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    try:
+        # Call Sarvam AI STT API
+        async with aiohttp.ClientSession() as http_session:
+            headers = {
+                "api-subscription-key": SARVAM_API_KEY,
+                "Content-Type": "application/json"
+            }
+            
+            payload = {
+                "language_code": request.language,
+                "model": "saaras:v1"
+            }
+            
+            # For STT, we need to send audio as file, not JSON
+            # Convert base64 to bytes
+            import base64
+            audio_bytes = base64.b64decode(request.audio)
+            
+            # Create multipart form data
+            data = aiohttp.FormData()
+            data.add_field('file', audio_bytes, filename='audio.wav', content_type='audio/wav')
+            data.add_field('language_code', request.language)
+            data.add_field('model', 'saaras:v1')
+            
+            async with http_session.post(
+                f"{sarvam_base_url}/speech-to-text",
+                data=data,
+                headers={"api-subscription-key": SARVAM_API_KEY}
+            ) as response:
+                if response.status != 200:
+                    error_text = await response.text()
+                    logger.error(f"Sarvam STT error: {error_text}")
+                    raise HTTPException(status_code=response.status, detail=error_text)
+                
+                data = await response.json()
+                transcribed_text = data.get("transcript", "")
+                
+                logger.info(f"STT ({request.language}): {transcribed_text}")
+                
+                return {
+                    "text": transcribed_text,
+                    "language": request.language
+                }
+    
+    except Exception as e:
+        logger.error(f"STT error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/voice/tts")
+async def text_to_speech(request: TTSRequest):
+    """Convert text to speech using Sarvam AI TTS"""
+    if not SARVAM_AVAILABLE:
+        raise HTTPException(
+            status_code=503,
+            detail="Sarvam AI not configured. Add SARVAM_API_KEY to use multilingual text-to-speech."
+        )
+    
+    try:
+        # Truncate text to 500 chars max (Sarvam limit)
+        truncated_text = request.text[:500] if len(request.text) > 500 else request.text
+        
+        # Map voice to valid Sarvam speakers
+        speaker_map = {
+            "meera": "anushka",  # Female voice
+            "arvind": "rahul",   # Male voice
+        }
+        speaker = speaker_map.get(request.voice, "anushka")  # Default to anushka
+        
+        logger.info(f"TTS request: text='{truncated_text[:50]}...', lang={request.language}, speaker={speaker}")
+        
+        # Call Sarvam AI TTS API
+        async with aiohttp.ClientSession() as http_session:
+            headers = {
+                "API-Subscription-Key": SARVAM_API_KEY
+            }
+            
+            payload = {
+                "inputs": [truncated_text],
+                "target_language_code": request.language,
+                "speaker": speaker,
+                "pitch": 0,
+                "pace": 1.0,
+                "loudness": 1.5,
+                "speech_sample_rate": 8000,
+                "enable_preprocessing": True,
+                "model": "bulbul:v2"
+            }
+            
+            logger.info(f"Calling Sarvam TTS: {sarvam_base_url}/text-to-speech")
+            
+            async with http_session.post(
+                f"{sarvam_base_url}/text-to-speech",
+                json=payload,
+                headers=headers
+            ) as response:
+                response_text = await response.text()
+                logger.info(f"Sarvam TTS response status: {response.status}")
+                logger.info(f"Sarvam TTS response: {response_text[:200]}")
+                
+                if response.status != 200:
+                    logger.error(f"Sarvam TTS error: {response_text}")
+                    raise HTTPException(status_code=response.status, detail=response_text)
+                
+                data = await response.json() if response_text else {}
+                # Sarvam returns array of audio responses
+                audio_base64 = data.get("audios", [""])[0] if "audios" in data else ""
+                
+                logger.info(f"TTS success ({request.language}, {request.voice}): audio_length={len(audio_base64)}")
+                
+                return {
+                    "audio": audio_base64,
+                    "language": request.language,
+                    "voice": request.voice
+                }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"TTS error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 if __name__ == "__main__":

@@ -42,6 +42,8 @@ export function useVoiceChat({
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const recognitionRef = useRef<any>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   // WebRTC connection
   const { connectionState, startConnection, stopConnection } = useWebRTC({
@@ -177,8 +179,77 @@ export function useVoiceChat({
           timestamp: new Date(),
         };
 
-        // Use browser text-to-speech to read the response aloud
+        // Try Sarvam AI TTS first (if available), fallback to browser TTS
+        let usedSarvam = false;
+
         if (data.text && typeof window !== "undefined") {
+          // Try to get Sarvam AI TTS audio
+          try {
+            console.log("Attempting Sarvam AI TTS...");
+            const ttsResponse = await fetch(
+              "http://localhost:8001/api/voice/tts",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  text: data.text,
+                  language: "en-IN",
+                  voice: "anushka", // Sarvam AI female voice
+                }),
+              }
+            );
+
+            if (ttsResponse.ok) {
+              const ttsData = await ttsResponse.json();
+              console.log("Sarvam TTS response:", {
+                hasAudio: !!ttsData.audio,
+                audioLength: ttsData.audio?.length,
+              });
+
+              if (ttsData.audio && ttsData.audio.length > 0) {
+                setIsSpeaking(true);
+                usedSarvam = true;
+
+                // Convert base64 to audio and play
+                const audioBlob = base64ToBlob(ttsData.audio, "audio/wav");
+                const audioUrl = URL.createObjectURL(audioBlob);
+
+                if (!audioRef.current) {
+                  audioRef.current = new Audio();
+                }
+
+                audioRef.current.src = audioUrl;
+                audioRef.current.onended = () => {
+                  setIsSpeaking(false);
+                  URL.revokeObjectURL(audioUrl);
+                };
+
+                audioRef.current.onerror = (e) => {
+                  console.error("Audio playback error:", e);
+                  setIsSpeaking(false);
+                  URL.revokeObjectURL(audioUrl);
+                };
+
+                await audioRef.current.play();
+                assistantMessage.audio = audioUrl;
+                console.log("✅ Using Sarvam AI voice");
+              }
+            } else {
+              const errorText = await ttsResponse.text();
+              console.error(
+                "Sarvam TTS failed:",
+                ttsResponse.status,
+                errorText
+              );
+            }
+          } catch (error) {
+            console.error("Sarvam TTS error:", error);
+          }
+        }
+
+        // Fallback: Use browser text-to-speech if Sarvam not available
+        if (!usedSarvam && data.text && typeof window !== "undefined") {
+          console.log("⚠️ Falling back to browser speech synthesis");
           setIsSpeaking(true);
 
           // Check if browser supports speech synthesis
@@ -205,32 +276,11 @@ export function useVoiceChat({
 
             // Speak the text
             window.speechSynthesis.speak(utterance);
+            console.log("Using browser speech synthesis");
           } else {
             console.warn("Speech synthesis not supported in this browser");
             setIsSpeaking(false);
           }
-        }
-
-        // Fallback: Play audio response if available from backend (currently not used)
-        if (data.audio && data.audio.length > 0) {
-          setIsSpeaking(true);
-
-          // Convert base64 to audio and play
-          const audioBlob = base64ToBlob(data.audio, "audio/wav");
-          const audioUrl = URL.createObjectURL(audioBlob);
-
-          if (!audioRef.current) {
-            audioRef.current = new Audio();
-          }
-
-          audioRef.current.src = audioUrl;
-          audioRef.current.onended = () => {
-            setIsSpeaking(false);
-            URL.revokeObjectURL(audioUrl);
-          };
-
-          await audioRef.current.play();
-          assistantMessage.audio = audioUrl;
         }
 
         setMessages((prev) => [...prev, assistantMessage]);
@@ -270,14 +320,102 @@ export function useVoiceChat({
     [sessionId, onError]
   );
 
-  // Start listening (voice input)
-  const startListening = useCallback(() => {
+  // Start listening (voice input with Sarvam AI STT support)
+  const startListening = useCallback(async () => {
     if (!sessionId || !isConnected) {
       console.error("Cannot start listening: not connected");
       return;
     }
 
-    // Check if browser supports speech recognition
+    try {
+      // Request microphone access
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      // Create MediaRecorder to capture audio
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        // Combine audio chunks
+        const audioBlob = new Blob(audioChunksRef.current, {
+          type: "audio/wav",
+        });
+
+        // Convert to base64
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+          const base64Audio = reader.result?.toString().split(",")[1] || "";
+
+          try {
+            // Try Sarvam AI STT first (supports Hindi and other Indian languages)
+            console.log("Sending audio to Sarvam AI STT...");
+            const sttResponse = await fetch(
+              "http://localhost:8001/api/voice/stt",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  session_id: sessionId,
+                  audio: base64Audio,
+                  language: "hi-IN", // Hindi - change to "en-IN" for English
+                }),
+              }
+            );
+
+            if (sttResponse.ok) {
+              const sttData = await sttResponse.json();
+              const transcript = sttData.text || "";
+              console.log("✅ Sarvam STT transcribed:", transcript);
+
+              if (transcript) {
+                sendTextMessage(transcript);
+              }
+            } else {
+              const errorText = await sttResponse.text();
+              console.error("Sarvam STT failed:", errorText);
+
+              // Fallback to browser speech recognition
+              console.log("⚠️ Falling back to browser speech recognition");
+              useBrowserSpeechRecognition();
+            }
+          } catch (error) {
+            console.error("STT error:", error);
+            // Fallback to browser speech recognition
+            useBrowserSpeechRecognition();
+          }
+        };
+
+        reader.readAsDataURL(audioBlob);
+
+        // Stop all tracks
+        stream.getTracks().forEach((track) => track.stop());
+      };
+
+      mediaRecorder.start();
+      setIsListening(true);
+      console.log(
+        "🎤 Recording started (say something in Hindi or English)..."
+      );
+    } catch (error) {
+      console.error("Error accessing microphone:", error);
+      if (onError) {
+        onError(error as Error);
+      }
+
+      // Fallback to browser speech recognition if mic access fails
+      useBrowserSpeechRecognition();
+    }
+  }, [sessionId, isConnected, sendTextMessage, onError]);
+
+  // Browser speech recognition fallback
+  const useBrowserSpeechRecognition = useCallback(() => {
     const SpeechRecognition =
       (window as any).SpeechRecognition ||
       (window as any).webkitSpeechRecognition;
@@ -300,7 +438,7 @@ export function useVoiceChat({
 
       recognition.continuous = false;
       recognition.interimResults = false;
-      recognition.lang = "en-US";
+      recognition.lang = "hi-IN"; // Hindi language
 
       recognition.onstart = () => {
         console.log("Voice recognition started");
@@ -343,14 +481,25 @@ export function useVoiceChat({
       setIsListening(false);
       if (onError) onError(error as Error);
     }
-  }, [sessionId, isConnected, sendTextMessage, onError]);
+  }, [sendTextMessage, onError]);
 
   // Stop listening
   const stopListening = useCallback(() => {
+    // Stop MediaRecorder if active
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state !== "inactive"
+    ) {
+      mediaRecorderRef.current.stop();
+      console.log("🛑 Recording stopped");
+    }
+
+    // Stop browser speech recognition if active
     if (recognitionRef.current) {
       recognitionRef.current.stop();
       recognitionRef.current = null;
     }
+
     setIsListening(false);
     console.log("Stopped listening");
   }, []);
