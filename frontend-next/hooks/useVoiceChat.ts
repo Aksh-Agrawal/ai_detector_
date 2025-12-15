@@ -100,6 +100,17 @@ export function useVoiceChat({
     if (!sessionId) return;
 
     try {
+      // Stop any ongoing speech
+      if (typeof window !== "undefined" && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+
+      // Stop listening if active
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+        recognitionRef.current = null;
+      }
+
       // Stop WebRTC
       stopConnection();
 
@@ -111,6 +122,8 @@ export function useVoiceChat({
       setSessionId(null);
       setIsConnected(false);
       setMessages([]);
+      setIsListening(false);
+      setIsSpeaking(false);
 
       console.log("Session ended");
     } catch (error) {
@@ -164,7 +177,41 @@ export function useVoiceChat({
           timestamp: new Date(),
         };
 
-        // Play audio response if available
+        // Use browser text-to-speech to read the response aloud
+        if (data.text && typeof window !== "undefined") {
+          setIsSpeaking(true);
+
+          // Check if browser supports speech synthesis
+          if ("speechSynthesis" in window) {
+            // Cancel any ongoing speech
+            window.speechSynthesis.cancel();
+
+            // Create speech utterance
+            const utterance = new SpeechSynthesisUtterance(data.text);
+            utterance.lang = "en-US";
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+
+            // Handle speech end
+            utterance.onend = () => {
+              setIsSpeaking(false);
+            };
+
+            utterance.onerror = (event) => {
+              console.error("Speech synthesis error:", event);
+              setIsSpeaking(false);
+            };
+
+            // Speak the text
+            window.speechSynthesis.speak(utterance);
+          } else {
+            console.warn("Speech synthesis not supported in this browser");
+            setIsSpeaking(false);
+          }
+        }
+
+        // Fallback: Play audio response if available from backend (currently not used)
         if (data.audio && data.audio.length > 0) {
           setIsSpeaking(true);
 
