@@ -41,6 +41,7 @@ export function useVoiceChat({
   const [isSpeaking, setIsSpeaking] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const recognitionRef = useRef<any>(null);
 
   // WebRTC connection
   const { connectionState, startConnection, stopConnection } = useWebRTC({
@@ -224,15 +225,86 @@ export function useVoiceChat({
 
   // Start listening (voice input)
   const startListening = useCallback(() => {
-    setIsListening(true);
-    // TODO: Implement voice recognition
-    console.log("Started listening");
-  }, []);
+    if (!sessionId || !isConnected) {
+      console.error("Cannot start listening: not connected");
+      return;
+    }
+
+    // Check if browser supports speech recognition
+    const SpeechRecognition =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      console.error("Speech recognition not supported in this browser");
+      if (onError) {
+        onError(
+          new Error(
+            "Voice input is not supported in your browser. Please use Chrome, Edge, or Safari."
+          )
+        );
+      }
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognitionRef.current = recognition;
+
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = "en-US";
+
+      recognition.onstart = () => {
+        console.log("Voice recognition started");
+        setIsListening(true);
+      };
+
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        console.log("Recognized:", transcript);
+
+        // Send the recognized text as a message
+        if (transcript) {
+          sendTextMessage(transcript);
+        }
+      };
+
+      recognition.onerror = (event: any) => {
+        console.error("Speech recognition error:", event.error);
+        setIsListening(false);
+
+        if (event.error === "not-allowed") {
+          if (onError) {
+            onError(
+              new Error(
+                "Microphone access denied. Please allow microphone permissions in your browser."
+              )
+            );
+          }
+        }
+      };
+
+      recognition.onend = () => {
+        console.log("Voice recognition ended");
+        setIsListening(false);
+      };
+
+      recognition.start();
+    } catch (error) {
+      console.error("Error starting voice recognition:", error);
+      setIsListening(false);
+      if (onError) onError(error as Error);
+    }
+  }, [sessionId, isConnected, sendTextMessage, onError]);
 
   // Stop listening
   const stopListening = useCallback(() => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      recognitionRef.current = null;
+    }
     setIsListening(false);
-    // TODO: Stop voice recognition
     console.log("Stopped listening");
   }, []);
 
