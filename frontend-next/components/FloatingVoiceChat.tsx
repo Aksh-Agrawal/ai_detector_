@@ -42,11 +42,11 @@ export default function FloatingVoiceChat() {
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
-    
+
     if (!isConnected) {
       await startSession(currentLanguage);
     }
-    
+
     await sendTextMessage(inputMessage.trim());
     setInputMessage("");
   };
@@ -104,7 +104,13 @@ export default function FloatingVoiceChat() {
                 <div>
                   <h3 className="text-white font-semibold">Voice Assistant</h3>
                   <p className="text-white/80 text-xs">
-                    {isConnected ? `Connected • ${currentLanguage === "hi-IN" ? "🇮🇳 हिंदी" : "🇮🇳 English"}` : "Not connected"}
+                    {isConnected
+                      ? `Connected • ${
+                          currentLanguage === "hi-IN"
+                            ? "🇮🇳 हिंदी"
+                            : "🇮🇳 English"
+                        }`
+                      : "Not connected"}
                   </p>
                 </div>
               </div>
@@ -122,7 +128,8 @@ export default function FloatingVoiceChat() {
                 <div className="text-center py-12">
                   <Bot className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                   <p className="text-gray-500 text-sm">
-                    Start a conversation! Ask me anything about your detection results.
+                    Start a conversation! Ask me anything about your detection
+                    results.
                   </p>
                 </div>
               )}
@@ -156,7 +163,9 @@ export default function FloatingVoiceChat() {
                         : "bg-white text-gray-800 shadow-sm"
                     }`}
                   >
-                    <p className="text-sm whitespace-pre-wrap">{message.text}</p>
+                    <p className="text-sm whitespace-pre-wrap">
+                      {message.text}
+                    </p>
                     <span
                       className={`text-xs mt-1 block ${
                         message.type === "user"
@@ -220,7 +229,9 @@ export default function FloatingVoiceChat() {
                     onClick={toggleLanguage}
                     className="flex-1 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-200 transition-all border border-gray-300"
                   >
-                    {currentLanguage === "hi-IN" ? "Switch to English" : "हिंदी में बदलें"}
+                    {currentLanguage === "hi-IN"
+                      ? "Switch to English"
+                      : "हिंदी में बदलें"}
                   </button>
                   <button
                     onClick={handleStartVoice}
@@ -237,7 +248,9 @@ export default function FloatingVoiceChat() {
                     <VoiceButton
                       isConnected={isConnected}
                       isListening={isListening}
-                      onClick={() => isListening ? stopListening() : startListening()}
+                      onClick={() =>
+                        isListening ? stopListening() : startListening()
+                      }
                     />
                     <span className="text-xs text-gray-500">
                       {isListening ? "Listening..." : "Click to speak"}
