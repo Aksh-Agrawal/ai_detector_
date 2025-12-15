@@ -2,13 +2,21 @@
 
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, Image, Video, Sparkles, ArrowLeft } from "lucide-react";
+import {
+  FileText,
+  Image,
+  Video,
+  Sparkles,
+  ArrowLeft,
+  File,
+} from "lucide-react";
 import Link from "next/link";
 import TextDetector from "@/components/TextDetector";
 import ImageDetector from "@/components/ImageDetector";
 import VideoDetector from "@/components/VideoDetector";
+import DocumentDetector from "@/components/DocumentDetector";
 
-type Tab = "text" | "image" | "video";
+type Tab = "text" | "image" | "video" | "document";
 type DetectionResult = {
   ai: number;
   human: number;
@@ -44,6 +52,7 @@ export default function Detector() {
     { id: "text" as Tab, label: "Text", icon: FileText },
     { id: "image" as Tab, label: "Image", icon: Image },
     { id: "video" as Tab, label: "Video", icon: Video },
+    { id: "document" as Tab, label: "Document", icon: File },
   ];
 
   return (
@@ -173,6 +182,7 @@ export default function Detector() {
             {activeTab === "video" && (
               <VideoDetector onResult={setDetectionResult} />
             )}
+            {activeTab === "document" && <DocumentDetector />}
           </motion.div>
         </AnimatePresence>
 

@@ -98,7 +98,7 @@ export default function Home() {
   const stats = [
     { value: "99%", label: "Accuracy", icon: CheckCircle2 },
     { value: "<1s", label: "Response Time", icon: Zap },
-    { value: "3", label: "Detection Types", icon: Target },
+    { value: "4", label: "Detection Types", icon: Target },
   ];
 
   return (
