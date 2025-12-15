@@ -161,18 +161,41 @@ class GeminiClient:
         Be clear, concise, and helpful. Use simple language. Provide specific examples
         from the analyzed text when possible."""
         
+        ai_score = detection_results.get('ai_score', 0)
+        human_score = detection_results.get('human_score', 0)
+        content_type = detection_results.get('type', 'text')
+        
         context_prompt = f"""
         Detection Results:
-        - AI Probability: {detection_results.get('ai_score', 0)}%
-        - Human Probability: {detection_results.get('human_score', 0)}%
-        - Key Features: {detection_results.get('features', {})}
+        - AI Probability: {ai_score:.1f}%
+        - Human Probability: {human_score:.1f}%
+        - Content Type: {content_type}
         
         User Question: {user_question}
         
-        Provide a clear, helpful explanation focusing on why the text was classified this way.
+        Provide a clear, helpful explanation focusing on why the {content_type} was classified this way.
+        Be concise (2-3 sentences) and specific.
         """
         
-        return self.generate_response(context_prompt, system_prompt=system_prompt)
+        # Use synchronous version
+        try:
+            messages = [{
+                "role": "user",
+                "parts": [f"SYSTEM INSTRUCTIONS: {system_prompt}"]
+            }, {
+                "role": "model",
+                "parts": ["Understood. I will follow these instructions."]
+            }, {
+                "role": "user",
+                "parts": [context_prompt]
+            }]
+            
+            chat = self.model.start_chat(history=messages[:-1])
+            response = chat.send_message(context_prompt)
+            return response.text
+        except Exception as e:
+            logger.error(f"Gemini error in explain_detection_results: {e}")
+            return f"Based on the analysis, this {content_type} appears to be {ai_score:.0f}% AI-generated and {human_score:.0f}% human-created."
 
 
 # System prompts for different features

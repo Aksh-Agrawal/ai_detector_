@@ -198,21 +198,34 @@ async def process_text(request: TextInputRequest):
             context = await session_manager.get_context(request.session_id)
             detection_results = context.get("detection_results")
             
-            # Get conversation history
+            # Get conversation history and convert to Gemini format
             history = await session_manager.get_history(request.session_id, limit=5)
+            gemini_context = []
+            for msg in history:
+                role = "model" if msg["role"] == "assistant" else "user"
+                gemini_context.append({
+                    "role": role,
+                    "parts": [msg["content"]]
+                })
             
             # Use Gemini to generate response
             if detection_results:
-                response_text = await gemini_client.explain_detection_results(
-                    detection_results=detection_results,
-                    user_question=request.text,
-                    conversation_history=history
+                # Format detection results for explanation
+                formatted_results = {
+                    "ai_score": detection_results.get("ai", 0) * 100,
+                    "human_score": detection_results.get("human", 0) * 100,
+                    "type": detection_results.get("type", "text"),
+                    "content": detection_results.get("content", "")
+                }
+                response_text = gemini_client.explain_detection_results(
+                    detection_results=formatted_results,
+                    user_question=request.text
                 )
             else:
                 # General conversation
                 response_text = await gemini_client.generate_response(
                     prompt=request.text,
-                    conversation_history=history,
+                    context=gemini_context,
                     system_prompt="You are a helpful AI assistant for an AI content detector. Be concise, friendly, and informative."
                 )
         except Exception as e:
