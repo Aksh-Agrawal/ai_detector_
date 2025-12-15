@@ -51,7 +51,7 @@ class SessionManager:
     async def create_session(
         self,
         user_id: Optional[str] = None,
-        language: str = "en-IN",
+        language: str = "hi-IN",
         voice: str = "meera"
     ) -> str:
         """
@@ -250,7 +250,7 @@ if __name__ == "__main__":
         # Create session
         session_id = await manager.create_session(
             user_id="test_user",
-            language="en-IN"
+            language="hi-IN"
         )
         print(f"Created session: {session_id}")
         

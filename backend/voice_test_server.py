@@ -109,7 +109,7 @@ app.add_middleware(
 # Request/Response Models
 class CreateSessionRequest(BaseModel):
     user_id: Optional[str] = None
-    language: str = "en-IN"
+    language: str = "hi-IN"
     voice: str = "anushka"  # Sarvam AI female voice
 
 
@@ -126,12 +126,12 @@ class SetResultsRequest(BaseModel):
 class AudioInputRequest(BaseModel):
     session_id: str
     audio: str  # Base64 encoded audio
-    language: str = "en-IN"
+    language: str = "hi-IN"
 
 
 class TTSRequest(BaseModel):
     text: str
-    language: str = "en-IN"
+    language: str = "hi-IN"
     voice: str = "anushka"  # Sarvam AI female voice
 
 
@@ -291,7 +291,7 @@ CRITICAL FORMATTING RULES:
     return {
         "text": response_text,
         "audio": "",  # Empty for testing (TTS requires Sarvam AI)
-        "language": session.get("language", "en-IN"),
+        "language": session.get("language", "hi-IN"),
         "voice": session.get("voice", "meera")
     }
 

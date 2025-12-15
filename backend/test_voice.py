@@ -24,7 +24,7 @@ async def test_session_manager():
     print("\n1. Creating session...")
     session = await manager.create_session(
         user_id="test_user",
-        language="en-IN",
+        language="hi-IN",
         voice="meera"
     )
     print(f"✓ Session created: {session['session_id']}")
@@ -88,7 +88,7 @@ async def test_mock_voice_flow():
     await manager.connect()
     
     # Create session
-    session = await manager.create_session(language="en-IN", voice="meera")
+    session = await manager.create_session(language="hi-IN", voice="meera")
     session_id = session['session_id']
     print(f"\n✓ Session started: {session_id}")
     

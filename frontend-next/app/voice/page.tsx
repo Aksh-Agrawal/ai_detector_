@@ -8,7 +8,7 @@ import VoiceButton from "@/components/VoiceButton";
 import VoiceChat from "@/components/VoiceChat";
 
 const LANGUAGES = [
-  { code: "en-IN", name: "English (India)" },
+  { code: "hi-IN", name: "English (India)" },
   { code: "hi-IN", name: "हिंदी (Hindi)" },
   { code: "ta-IN", name: "தமிழ் (Tamil)" },
   { code: "te-IN", name: "తెలుగు (Telugu)" },
@@ -22,7 +22,7 @@ const VOICES = [
 ];
 
 export default function VoiceAssistantPage() {
-  const [selectedLanguage, setSelectedLanguage] = useState("en-IN");
+  const [selectedLanguage, setSelectedLanguage] = useState("hi-IN");
   const [selectedVoice, setSelectedVoice] = useState("meera");
 
   const {

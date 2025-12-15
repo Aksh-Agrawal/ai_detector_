@@ -32,7 +32,7 @@ def test_server():
             f"{base_url}/api/voice/session",
             json={
                 "user_id": "test_user",
-                "language": "en-IN",
+                "language": "hi-IN",
                 "voice": "meera"
             }
         )

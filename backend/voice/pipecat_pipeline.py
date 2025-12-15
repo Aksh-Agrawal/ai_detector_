@@ -15,7 +15,7 @@ class PipelineConfig:
     """Configuration for voice pipeline"""
     sarvam_api_key: str
     gemini_api_key: str
-    language: str = "en-IN"
+    language: str = "hi-IN"
     voice: str = "meera"
     sample_rate: int = 16000
     system_prompt: Optional[str] = None
@@ -249,7 +249,7 @@ if __name__ == "__main__":
         config = PipelineConfig(
             sarvam_api_key=os.getenv("SARVAM_API_KEY"),
             gemini_api_key=os.getenv("GEMINI_API_KEY"),
-            language="en-IN",
+            language="hi-IN",
             voice="meera",
             system_prompt="You are a helpful AI detection assistant."
         )

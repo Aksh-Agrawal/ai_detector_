@@ -320,7 +320,7 @@ from sarvam import SarvamClient
 client = SarvamClient(api_key="YOUR_API_KEY")
 
 # Real-time streaming STT
-async def transcribe_audio(audio_stream, language="en-IN"):
+async def transcribe_audio(audio_stream, language="hi-IN"):
     response = await client.speech_to_text_stream(
         audio=audio_stream,
         language_code=language,
@@ -333,7 +333,7 @@ async def transcribe_audio(audio_stream, language="en-IN"):
 
 ```python
 # Generate speech from text
-async def generate_speech(text, language="en-IN", voice="meera"):
+async def generate_speech(text, language="hi-IN", voice="meera"):
     response = await client.text_to_speech(
         text=text,
         language_code=language,
@@ -347,7 +347,7 @@ async def generate_speech(text, language="en-IN", voice="meera"):
 
 ```python
 SUPPORTED_LANGUAGES = {
-    "en-IN": "English (India)",
+    "hi-IN": "English (India)",
     "hi-IN": "Hindi",
     "ta-IN": "Tamil",
     "te-IN": "Telugu",
@@ -377,7 +377,7 @@ pipeline = Pipeline(
     processors=[
         SarvamSTTProcessor(
             api_key=SARVAM_API_KEY,
-            language="en-IN",
+            language="hi-IN",
             sample_rate=16000
         ),
         GeminiLLMProcessor(
@@ -387,7 +387,7 @@ pipeline = Pipeline(
         ),
         SarvamTTSProcessor(
             api_key=SARVAM_API_KEY,
-            language="en-IN",
+            language="hi-IN",
             voice="meera"
         )
     ]

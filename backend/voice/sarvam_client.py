@@ -31,7 +31,7 @@ class SarvamAIClient:
     async def transcribe_stream(
         self,
         audio_stream: AsyncIterator[bytes],
-        language: str = "en-IN"
+        language: str = "hi-IN"
     ) -> AsyncIterator[str]:
         """
         Stream audio to Sarvam AI for real-time transcription
@@ -77,7 +77,7 @@ class SarvamAIClient:
     async def transcribe_audio(
         self,
         audio_data: bytes,
-        language: str = "en-IN"
+        language: str = "hi-IN"
     ) -> str:
         """
         Transcribe complete audio file
@@ -110,7 +110,7 @@ class SarvamAIClient:
     async def synthesize_speech(
         self,
         text: str,
-        language: str = "en-IN",
+        language: str = "hi-IN",
         voice: str = "meera",
         speed: float = 1.0
     ) -> bytes:
@@ -145,7 +145,7 @@ class SarvamAIClient:
     def get_supported_languages(self) -> dict:
         """Get list of supported languages"""
         return {
-            "en-IN": "English (India)",
+            "hi-IN": "English (India)",
             "hi-IN": "Hindi",
             "ta-IN": "Tamil",
             "te-IN": "Telugu",
@@ -158,11 +158,11 @@ class SarvamAIClient:
             "od-IN": "Odia"
         }
     
-    def get_available_voices(self, language: str = "en-IN") -> list:
+    def get_available_voices(self, language: str = "hi-IN") -> list:
         """Get available voices for a language"""
         # Sarvam TTS voices (from documentation)
         voices = {
-            "en-IN": ["meera", "arjun", "anushka"],
+            "hi-IN": ["meera", "arjun", "anushka"],
             "hi-IN": ["meera", "arjun", "anushka"],
             "ta-IN": ["meera", "arjun"],
             "te-IN": ["meera", "arjun"],

@@ -80,7 +80,7 @@ app.add_middleware(
 # Request/Response Models
 class SessionCreateRequest(BaseModel):
     user_id: Optional[str] = None
-    language: str = "en-IN"
+    language: str = "hi-IN"
     voice: str = "meera"
 
 

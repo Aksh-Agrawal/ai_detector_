@@ -41,7 +41,7 @@ export function useVoiceChat({
   const [isConnected, setIsConnected] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [currentLanguage, setCurrentLanguage] = useState<string>("en-IN");
+  const [currentLanguage, setCurrentLanguage] = useState<string>("hi-IN");
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const recognitionRef = useRef<any>(null);
@@ -72,7 +72,7 @@ export function useVoiceChat({
           if (browserLang.includes("hi")) {
             detectedLanguage = "hi-IN";
           } else {
-            detectedLanguage = "en-IN";
+            detectedLanguage = "hi-IN";
           }
         }
         setCurrentLanguage(detectedLanguage);
@@ -209,7 +209,7 @@ export function useVoiceChat({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                   text: data.text,
-                  language: "en-IN",
+                  language: "hi-IN",
                   voice: "anushka", // Sarvam AI female voice
                 }),
               }
@@ -557,7 +557,7 @@ export function useVoiceChat({
 
   // Toggle language between English and Hindi
   const toggleLanguage = useCallback(() => {
-    const newLanguage = currentLanguage === "hi-IN" ? "en-IN" : "hi-IN";
+    const newLanguage = currentLanguage === "hi-IN" ? "hi-IN" : "hi-IN";
     setCurrentLanguage(newLanguage);
     console.log(`Language toggled to: ${newLanguage}`);
   }, [currentLanguage]);

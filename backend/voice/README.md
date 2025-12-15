@@ -157,7 +157,7 @@ import { Mic } from "lucide-react";
    Invoke-RestMethod -Method POST `
      -Uri http://localhost:8001/api/voice/session `
      -ContentType "application/json" `
-     -Body '{"language":"en-IN","voice":"meera"}'
+     -Body '{"language":"hi-IN","voice":"meera"}'
    ```
 
 4. Send a text message:

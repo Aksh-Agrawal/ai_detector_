@@ -38,7 +38,7 @@ class SessionManager:
     async def create_session(
         self,
         user_id: Optional[str] = None,
-        language: str = "en-IN",
+        language: str = "hi-IN",
         voice: str = "meera"
     ) -> Dict[str, Any]:
         """
