@@ -69,14 +69,16 @@ export function useVoiceChat({
         let detectedLanguage = language;
         if (!detectedLanguage) {
           const browserLang = navigator.language.toLowerCase();
-          if (browserLang.includes('hi')) {
+          if (browserLang.includes("hi")) {
             detectedLanguage = "hi-IN";
           } else {
             detectedLanguage = "en-IN";
           }
         }
         setCurrentLanguage(detectedLanguage);
-        console.log(`Starting voice session with language: ${detectedLanguage}`);
+        console.log(
+          `Starting voice session with language: ${detectedLanguage}`
+        );
 
         // Create session on server
         const response = await fetch(
@@ -488,7 +490,9 @@ export function useVoiceChat({
       recognition.lang = currentLanguage; // Use current language (en-IN or hi-IN)
 
       recognition.onstart = () => {
-        console.log(`🎤 Browser voice recognition started (${currentLanguage})`);
+        console.log(
+          `🎤 Browser voice recognition started (${currentLanguage})`
+        );
         setIsListening(true);
       };
 

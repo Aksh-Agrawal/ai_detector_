@@ -333,7 +333,11 @@ export default function DocumentDetector() {
                   Voice Assistant
                 </h3>
                 <p className="text-xs text-gray-500">
-                  {isConnected ? `Connected • ${currentLanguage === "hi-IN" ? "🇮🇳 हिंदी" : "🇮🇳 English"}` : "Click to start"}
+                  {isConnected
+                    ? `Connected • ${
+                        currentLanguage === "hi-IN" ? "🇮🇳 हिंदी" : "🇮🇳 English"
+                      }`
+                    : "Click to start"}
                 </p>
               </div>
             </div>
@@ -345,7 +349,9 @@ export default function DocumentDetector() {
                     className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-all border border-gray-300"
                     title="Toggle Language"
                   >
-                    {currentLanguage === "hi-IN" ? "Switch to English" : "हिंदी में बदलें"}
+                    {currentLanguage === "hi-IN"
+                      ? "Switch to English"
+                      : "हिंदी में बदलें"}
                   </button>
                   <button
                     onClick={handleStartVoice}
@@ -360,7 +366,9 @@ export default function DocumentDetector() {
                   <VoiceButton
                     isConnected={isConnected}
                     isListening={isListening}
-                    onClick={() => isListening ? stopListening() : startListening()}
+                    onClick={() =>
+                      isListening ? stopListening() : startListening()
+                    }
                   />
                   <button
                     onClick={endSession}
