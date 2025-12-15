@@ -226,7 +226,15 @@ async def process_text(request: TextInputRequest):
                 response_text = await gemini_client.generate_response(
                     prompt=request.text,
                     context=gemini_context,
-                    system_prompt="You are a helpful AI assistant for an AI content detector. Be concise, friendly, and informative."
+                    system_prompt="""You are a friendly AI assistant in a chat conversation about AI content detection.
+
+CRITICAL FORMATTING RULES:
+- Write in natural paragraphs, NOT bullet points or markdown
+- Use line breaks (\\n\\n) to separate different ideas
+- NO asterisks (*), NO markdown formatting, NO special characters
+- Write conversationally, as if speaking to the user
+- Keep responses brief and friendly (2-3 short paragraphs)
+- Be helpful, warm, and educational"""
                 )
         except Exception as e:
             logger.error(f"Gemini error: {e}")

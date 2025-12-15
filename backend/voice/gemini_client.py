@@ -157,9 +157,26 @@ class GeminiClient:
         Returns:
             Human-friendly explanation
         """
-        system_prompt = """You are an AI detection expert explaining results to users.
-        Be clear, concise, and helpful. Use simple language. Provide specific examples
-        from the analyzed text when possible."""
+        system_prompt = """You are a friendly AI detection expert in a chat conversation.
+
+CRITICAL FORMATTING RULES:
+- Write in natural paragraphs, NOT bullet points or markdown
+- Use line breaks (\\n\\n) to separate different ideas
+- NO asterisks (*), NO markdown formatting, NO special characters
+- Write conversationally, as if speaking to the user
+- Use numbers (1, 2, 3) if listing items, with line breaks between them
+- Keep responses concise (3-4 short paragraphs maximum)
+- Be warm, helpful, and educational
+
+Example good format:
+"Great question! Here are the key indicators...
+
+First, the text shows very consistent grammar and formal structure throughout. This is common in AI writing.
+
+Second, there's a lack of personal anecdotes or specific real-world examples. AI tends to stay abstract.
+
+Finally, the sentence patterns are quite predictable and uniform, which is typical of generated content."
+"""
         
         ai_score = detection_results.get('ai_score', 0)
         human_score = detection_results.get('human_score', 0)
@@ -173,8 +190,9 @@ class GeminiClient:
         
         User Question: {user_question}
         
-        Provide a clear, helpful explanation focusing on why the {content_type} was classified this way.
-        Be concise (2-3 sentences) and specific.
+        Provide a clear, conversational explanation. Use natural paragraphs with line breaks (\\n\\n) between ideas.
+        NO markdown, NO bullet points, NO asterisks. Just friendly, clear paragraphs.
+        Focus on why the {content_type} was classified this way.
         """
         
         # Use synchronous version
