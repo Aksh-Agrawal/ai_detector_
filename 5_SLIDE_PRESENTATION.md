@@ -9,6 +9,7 @@
 <div align="center">
 
 # 🧠 AI Content Detector
+
 ## with Multilingual Voice Assistant
 
 ### Multi-Modal Detection Platform
@@ -18,6 +19,7 @@
 ---
 
 ### Key Metrics
+
 **88.5% Accuracy** | **10+ Languages** | **<1s Voice Response**
 
 ---
@@ -30,6 +32,7 @@
 </div>
 
 **Visual Design:**
+
 - Large gradient background (orange → green)
 - AI brain icon/logo at center
 - Metrics displayed as badges
@@ -118,12 +121,12 @@
 
 ### Technology Stack
 
-| **Frontend** | **Backend** | **AI/ML** | **Tools** |
-|-------------|------------|-----------|-----------|
-| Next.js 14.2 | Flask | Sarvam AI (STT/TTS) | PyMuPDF |
-| TypeScript | FastAPI | Gemini 2.5 Flash | python-docx |
-| Framer Motion | Redis | PyTorch | WebRTC |
-| Tailwind CSS | Python 3.11 | OpenCV | Axios |
+| **Frontend**  | **Backend** | **AI/ML**           | **Tools**   |
+| ------------- | ----------- | ------------------- | ----------- |
+| Next.js 14.2  | Flask       | Sarvam AI (STT/TTS) | PyMuPDF     |
+| TypeScript    | FastAPI     | Gemini 2.5 Flash    | python-docx |
+| Framer Motion | Redis       | PyTorch             | WebRTC      |
+| Tailwind CSS  | Python 3.11 | OpenCV              | Axios       |
 
 ### Data Flow Diagram
 
@@ -206,15 +209,15 @@ Legend:  ████ = 10%    Target: >85% ✅ EXCEEDED
 
 ### Performance Metrics
 
-| **Metric** | **Target** | **Achieved** | **Status** |
-|-----------|-----------|-------------|-----------|
-| **Text Analysis** | <2s | **0.8s** | ✅ **2.5x faster** |
-| **Image Analysis** | <3s | **2.1s** | ✅ Met target |
-| **Video Analysis** | <5s | **4.3s** | ✅ Met target |
-| **Document Analysis** | <3s | **1.9s** | ✅ Faster |
-| **Voice Latency** | <1s | **0.7s** | ✅ **Real-time** |
-| **STT Transcription** | <1.5s | **1.1s** | ✅ Met target |
-| **TTS Generation** | <1s | **0.6s** | ✅ Exceeded |
+| **Metric**            | **Target** | **Achieved** | **Status**         |
+| --------------------- | ---------- | ------------ | ------------------ |
+| **Text Analysis**     | <2s        | **0.8s**     | ✅ **2.5x faster** |
+| **Image Analysis**    | <3s        | **2.1s**     | ✅ Met target      |
+| **Video Analysis**    | <5s        | **4.3s**     | ✅ Met target      |
+| **Document Analysis** | <3s        | **1.9s**     | ✅ Faster          |
+| **Voice Latency**     | <1s        | **0.7s**     | ✅ **Real-time**   |
+| **STT Transcription** | <1.5s      | **1.1s**     | ✅ Met target      |
+| **TTS Generation**    | <1s        | **0.6s**     | ✅ Exceeded        |
 
 ### Multilingual Voice Support
 
@@ -239,5 +242,7 @@ Legend:  ████ = 10%    Target: >85% ✅ EXCEEDED
 ### Voice Assistant Examples
 
 **English Example:**
+
 ```
 User: "Why was this detected as AI?"
+```
