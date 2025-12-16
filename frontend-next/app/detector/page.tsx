@@ -16,6 +16,8 @@ import ImageDetector from "@/components/ImageDetector";
 import VideoDetector from "@/components/VideoDetector";
 import DocumentDetector from "@/components/DocumentDetector";
 import FloatingVoiceChat from "@/components/FloatingVoiceChat";
+import { LoginButton } from "@/components/LoginButton";
+import { ProtectedFeature } from "@/components/ProtectedFeature";
 
 type Tab = "text" | "image" | "video" | "document";
 type DetectionResult = {
@@ -117,11 +119,14 @@ export default function Detector() {
               AI Content Detector
             </h1>
           </div>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-6">
             Analyze text, images, and videos to determine if they were created
             by AI or humans. Get instant, accurate results powered by machine
             learning.
           </p>
+          <div className="flex justify-center">
+            <LoginButton />
+          </div>
         </motion.div>
 
         {/* Tabs */}
@@ -178,12 +183,20 @@ export default function Detector() {
               <TextDetector onResult={setDetectionResult} />
             )}
             {activeTab === "image" && (
-              <ImageDetector onResult={setDetectionResult} />
+              <ProtectedFeature featureName="Image">
+                <ImageDetector onResult={setDetectionResult} />
+              </ProtectedFeature>
             )}
             {activeTab === "video" && (
-              <VideoDetector onResult={setDetectionResult} />
+              <ProtectedFeature featureName="Video">
+                <VideoDetector onResult={setDetectionResult} />
+              </ProtectedFeature>
             )}
-            {activeTab === "document" && <DocumentDetector />}
+            {activeTab === "document" && (
+              <ProtectedFeature featureName="Document">
+                <DocumentDetector />
+              </ProtectedFeature>
+            )}
           </motion.div>
         </AnimatePresence>
 
