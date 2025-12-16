@@ -87,12 +87,24 @@ export default function Home() {
   ];
 
   const technologies = [
-    { name: "Next.js", category: "Frontend Framework", color: "#000000" },
+    { name: "Next.js 14.2", category: "Frontend Framework", color: "#000000" },
     { name: "Flask", category: "Backend API", color: "#f97316" },
+    { name: "FastAPI", category: "Voice Server", color: "#009688" },
     { name: "PyTorch", category: "Deep Learning", color: "#ef4444" },
-    { name: "Transformers", category: "AI Models", color: "#eab308" },
-    { name: "Scikit-learn", category: "ML Pipeline", color: "#3b82f6" },
+    {
+      name: "Sarvam AI",
+      category: "STT/TTS (10+ languages)",
+      color: "#ec4899",
+    },
+    {name: "Hugging Face", category: "Model Hub", color: "#ff6ac1" },
+    {name: "sklearn", category: "ML Algorithms", color: "#f59e0b" },
+    { name: "Gemini 2.5", category: "LLM (FREE)", color: "#8b5cf6" },
+    { name: "PyMuPDF", category: "PDF Processing", color: "#eab308" },
+    { name: "python-docx", category: "Document Parser", color: "#06b6d4" },
     { name: "OpenCV", category: "Video Processing", color: "#22c55e" },
+    { name: "Framer Motion", category: "UI Animations", color: "#3b82f6" },
+    { name: "WebRTC", category: "Voice Communication", color: "#f97316" },
+    { name: "Redis", category: "Session Management", color: "#dc2626" },
   ];
 
   const stats = [
