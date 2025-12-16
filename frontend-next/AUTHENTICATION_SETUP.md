@@ -10,6 +10,7 @@ The AI Content Detector uses Clerk for authentication to protect advanced featur
 ## Why Clerk?
 
 Clerk provides a complete authentication solution with:
+
 - Pre-built UI components (sign-in modal, user button)
 - Multiple OAuth providers (Google, GitHub, etc.)
 - User management dashboard
@@ -49,6 +50,7 @@ Clerk provides Google OAuth out of the box, but you can customize it:
 
 1. Navigate to the `frontend-next` directory
 2. Create `.env.local` file:
+
    ```bash
    cp .env.local.example .env.local
    ```
@@ -71,6 +73,7 @@ Visit `http://localhost:3000/detector` and test the Google login!
 ## Features
 
 ### Login Button
+
 - Appears at the top of the detector page
 - Shows "Sign in with Google" when logged out
 - Opens a beautiful modal for authentication
@@ -78,39 +81,45 @@ Visit `http://localhost:3000/detector` and test the Google login!
 - Managed by Clerk's pre-built components
 
 ### Protected Features
+
 When not logged in, users see a lock screen for:
+
 - Image Detection
 - Video Detection
 - Document Detection
 
 The lock screen includes:
+
 - Clear message explaining authentication requirement
 - "Sign in with Google" button (opens Clerk modal)
 - Visual lock icon animation
 
 ### Available Features
 
-| Feature | Without Login | With Google Login |
-|---------|--------------|-------------------|
-| Text Detection | ✅ Full Access | ✅ Full Access |
-| Image Detection | ❌ Locked | ✅ Full Access |
-| Video Detection | ❌ Locked | ✅ Full Access |
-| Document Detection | ❌ Locked | ✅ Full Access |
-| Voice Assistant | ✅ Full Access | ✅ Full Access |
+| Feature            | Without Login  | With Google Login |
+| ------------------ | -------------- | ----------------- |
+| Text Detection     | ✅ Full Access | ✅ Full Access    |
+| Image Detection    | ❌ Locked      | ✅ Full Access    |
+| Video Detection    | ❌ Locked      | ✅ Full Access    |
+| Document Detection | ❌ Locked      | ✅ Full Access    |
+| Voice Assistant    | ✅ Full Access | ✅ Full Access    |
 
 ## Files Created/Modified
 
 ### New Files
+
 - `middleware.ts` - Clerk middleware for route protection
 - `.env.local.example` - Environment variable template
 
 ### Modified Files
+
 - `app/layout.tsx` - Added ClerkProvider wrapper
 - `components/LoginButton.tsx` - Uses Clerk's SignInButton and useUser hook
 - `components/ProtectedFeature.tsx` - Uses Clerk's useUser hook for auth state
 - `lib/auth.ts` - No longer needed (Clerk handles everything)
 
 ### Removed Files
+
 - `app/auth/callback/route.ts` - Not needed with Clerk (handles OAuth internally)
 
 ## How It Works
@@ -144,6 +153,7 @@ The lock screen includes:
 ### Middleware Protection
 
 The `middleware.ts` file protects routes:
+
 - **Public routes:** `/`, text detection API, voice API
 - **Protected routes:** Image, video, document detection APIs
 - Automatically redirects unauthenticated users
@@ -151,11 +161,13 @@ The `middleware.ts` file protects routes:
 ## Clerk Components Used
 
 ### Client Components
+
 - `<SignInButton>` - Triggers sign-in modal
 - `<SignOutButton>` - Handles logout
 - `useUser()` - Hook for user state and authentication status
 
 ### Provider
+
 - `<ClerkProvider>` - Wraps the entire app in layout.tsx
 
 ## Security Notes
@@ -170,12 +182,14 @@ The `middleware.ts` file protects routes:
 ### "Sign in with Google" button doesn't work
 
 **Check:**
+
 1. Clerk keys are correct in `.env.local`
 2. Both `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` are set
 3. Application is running on `http://localhost:3000`
 4. No errors in browser console (F12)
 
 **Test:**
+
 - Open browser console to check for errors
 - Verify environment variables are loaded
 - Check Clerk dashboard for any setup issues
@@ -183,6 +197,7 @@ The `middleware.ts` file protects routes:
 ### Modal doesn't open
 
 **Fix:**
+
 1. Hard refresh the page (Ctrl+Shift+R)
 2. Clear browser cache
 3. Check that ClerkProvider is wrapping the app in `layout.tsx`
@@ -191,6 +206,7 @@ The `middleware.ts` file protects routes:
 ### Session not persisting
 
 **Fix:**
+
 1. Check that cookies are enabled in your browser
 2. Ensure you're using `http://localhost:3000` (not `127.0.0.1`)
 3. Clear cookies and try again
@@ -199,6 +215,7 @@ The `middleware.ts` file protects routes:
 ### Protected features still showing when logged out
 
 **Fix:**
+
 1. Hard refresh the page (Ctrl+Shift+R)
 2. Check that middleware.ts is configured correctly
 3. Verify `useUser()` is returning correct state
@@ -238,12 +255,13 @@ When deploying to production:
 ### 2. Update Environment Variables
 
 In your hosting platform (Vercel, Netlify, etc.), set:
+
 ```env
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_your_production_key
 CLERK_SECRET_KEY=sk_live_your_production_secret
 ```
 
-⚠️ **Important:** Use production keys (pk_live_* and sk_live_*) in production!
+⚠️ **Important:** Use production keys (pk*live*_ and sk*live*_) in production!
 
 ### 3. Deploy
 
@@ -252,13 +270,17 @@ Deploy your application - Clerk will automatically work in production!
 ## Additional Clerk Features
 
 ### Multi-Factor Authentication
+
 Enable 2FA in Clerk dashboard → **User & Authentication** → **Multi-factor**
 
 ### Email/Password Authentication
+
 Enable in **Social Connections** to allow email signup
 
 ### More OAuth Providers
+
 Clerk supports:
+
 - GitHub
 - Facebook
 - Twitter
@@ -269,14 +291,16 @@ Clerk supports:
 Enable them in **Social Connections**
 
 ### User Metadata
-Store custom data on users:
-```tsx
-import { useUser } from '@clerk/nextjs'
 
-const { user } = useUser()
+Store custom data on users:
+
+```tsx
+import { useUser } from "@clerk/nextjs";
+
+const { user } = useUser();
 await user.update({
-  publicMetadata: { plan: 'premium' }
-})
+  publicMetadata: { plan: "premium" },
+});
 ```
 
 ## API Routes Protection
@@ -284,15 +308,15 @@ await user.update({
 Protect API routes with Clerk:
 
 ```typescript
-import { auth } from '@clerk/nextjs/server'
+import { auth } from "@clerk/nextjs/server";
 
 export async function GET() {
-  const { userId } = await auth()
-  
+  const { userId } = await auth();
+
   if (!userId) {
-    return new Response('Unauthorized', { status: 401 })
+    return new Response("Unauthorized", { status: 401 });
   }
-  
+
   // Your protected logic here
 }
 ```
@@ -300,6 +324,7 @@ export async function GET() {
 ## Support
 
 For issues or questions:
+
 - Clerk Documentation: https://clerk.com/docs
 - Clerk Discord: https://clerk.com/discord
 - GitHub Issues: Your repository

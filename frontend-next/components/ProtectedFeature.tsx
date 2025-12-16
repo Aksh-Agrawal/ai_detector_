@@ -9,7 +9,10 @@ interface ProtectedFeatureProps {
   featureName: string;
 }
 
-export function ProtectedFeature({ children, featureName }: ProtectedFeatureProps) {
+export function ProtectedFeature({
+  children,
+  featureName,
+}: ProtectedFeatureProps) {
   const { isSignedIn, isLoaded } = useUser();
 
   if (!isLoaded) {

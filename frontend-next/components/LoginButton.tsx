@@ -16,8 +16,10 @@ export function LoginButton() {
   }
 
   if (isSignedIn) {
-    const displayName = user?.fullName?.split(" ")[0] || user?.primaryEmailAddress?.emailAddress?.split("@")[0];
-    
+    const displayName =
+      user?.fullName?.split(" ")[0] ||
+      user?.primaryEmailAddress?.emailAddress?.split("@")[0];
+
     return (
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 border border-green-200 rounded-lg">
