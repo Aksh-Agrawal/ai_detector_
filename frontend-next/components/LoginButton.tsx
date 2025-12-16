@@ -22,9 +22,19 @@ export function LoginButton() {
 
     return (
       <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 border border-green-200 rounded-lg">
-          <User className="w-4 h-4 text-green-600" />
-          <span className="text-sm font-medium text-green-800">
+        <div className="flex items-center gap-2">
+          {user?.imageUrl ? (
+            <img
+              src={user.imageUrl}
+              alt={displayName || "User"}
+              className="w-8 h-8 rounded-full border-2 border-green-500"
+            />
+          ) : (
+            <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
+              <User className="w-5 h-5 text-white" />
+            </div>
+          )}
+          <span className="text-sm font-medium text-gray-800">
             {displayName}
           </span>
         </div>

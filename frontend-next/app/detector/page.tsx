@@ -16,7 +16,7 @@ import ImageDetector from "@/components/ImageDetector";
 import VideoDetector from "@/components/VideoDetector";
 import DocumentDetector from "@/components/DocumentDetector";
 import FloatingVoiceChat from "@/components/FloatingVoiceChat";
-import { LoginButton } from "@/components/LoginButton";
+import { Navbar } from "@/components/Navbar";
 import { ProtectedFeature } from "@/components/ProtectedFeature";
 
 type Tab = "text" | "image" | "video" | "document";
@@ -59,7 +59,9 @@ export default function Detector() {
   ];
 
   return (
-    <main className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <>
+      <Navbar />
+      <main className="min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Floating background elements - lighter version */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {particles.map((particle) => (
@@ -119,14 +121,11 @@ export default function Detector() {
               AI Content Detector
             </h1>
           </div>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-6">
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Analyze text, images, and videos to determine if they were created
             by AI or humans. Get instant, accurate results powered by machine
             learning.
           </p>
-          <div className="flex justify-center">
-            <LoginButton />
-          </div>
         </motion.div>
 
         {/* Tabs */}
@@ -214,5 +213,6 @@ export default function Detector() {
       {/* Floating Voice Chat */}
       <FloatingVoiceChat />
     </main>
+    </>
   );
 }

@@ -15,6 +15,7 @@ import {
   Globe,
   MessageCircle,
 } from "lucide-react";
+import { Navbar } from "@/components/Navbar";
 
 export default function About() {
   const features = [
@@ -84,7 +85,9 @@ export default function About() {
   ];
 
   return (
-    <main className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <>
+      <Navbar />
+      <main className="min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
         {/* Back Button */}
         <motion.div
@@ -298,5 +301,6 @@ export default function About() {
         </motion.div>
       </div>
     </main>
+    </>
   );
 }

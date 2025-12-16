@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   Mic,
 } from "lucide-react";
+import { Navbar } from "@/components/Navbar";
 
 export default function Home() {
   const [hoveredFeature, setHoveredFeature] = useState<number | null>(null);
@@ -114,7 +115,9 @@ export default function Home() {
   ];
 
   return (
-    <main className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <>
+      <Navbar />
+      <main className="min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Floating background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {particles.map((particle) => (
@@ -462,5 +465,6 @@ export default function Home() {
         </motion.div>
       </div>
     </main>
+    </>
   );
 }
