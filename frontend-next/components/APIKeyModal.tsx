@@ -2,7 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Key, ExternalLink, AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
+import {
+  X,
+  Key,
+  ExternalLink,
+  AlertCircle,
+  CheckCircle2,
+  Loader2,
+} from "lucide-react";
 
 interface APIKeyStatus {
   gemini: {
@@ -29,7 +36,11 @@ interface APIKeyModalProps {
   onKeysConfigured?: () => void;
 }
 
-export default function APIKeyModal({ isOpen, onClose, onKeysConfigured }: APIKeyModalProps) {
+export default function APIKeyModal({
+  isOpen,
+  onClose,
+  onKeysConfigured,
+}: APIKeyModalProps) {
   const [geminiKey, setGeminiKey] = useState("");
   const [sarvamKey, setSarvamKey] = useState("");
   const [loading, setLoading] = useState(false);
@@ -48,7 +59,9 @@ export default function APIKeyModal({ isOpen, onClose, onKeysConfigured }: APIKe
   const fetchStatus = async () => {
     try {
       setStatusLoading(true);
-      const response = await fetch("http://localhost:8001/api/voice/api-keys/status");
+      const response = await fetch(
+        "http://localhost:8001/api/voice/api-keys/status"
+      );
       const data = await response.json();
       setStatus(data);
     } catch (err) {
@@ -70,27 +83,32 @@ export default function APIKeyModal({ isOpen, onClose, onKeysConfigured }: APIKe
 
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:8001/api/voice/api-keys/configure", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          gemini_api_key: geminiKey || undefined,
-          sarvam_api_key: sarvamKey || undefined,
-        }),
-      });
+      const response = await fetch(
+        "http://localhost:8001/api/voice/api-keys/configure",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            gemini_api_key: geminiKey || undefined,
+            sarvam_api_key: sarvamKey || undefined,
+          }),
+        }
+      );
 
       const result = await response.json();
 
       if (result.success) {
         setSuccess(
-          `Successfully configured: ${result.updated.join(", ")}. You can now use voice features!`
+          `Successfully configured: ${result.updated.join(
+            ", "
+          )}. You can now use voice features!`
         );
         setGeminiKey("");
         setSarvamKey("");
-        
+
         // Refresh status
         await fetchStatus();
-        
+
         // Notify parent
         if (onKeysConfigured) {
           setTimeout(() => {
@@ -99,7 +117,9 @@ export default function APIKeyModal({ isOpen, onClose, onKeysConfigured }: APIKe
         }
       } else if (result.errors && result.errors.length > 0) {
         setError(
-          `Errors: ${result.errors.map((e: any) => `${e.service}: ${e.error}`).join(", ")}`
+          `Errors: ${result.errors
+            .map((e: any) => `${e.service}: ${e.error}`)
+            .join(", ")}`
         );
       }
     } catch (err) {
@@ -152,7 +172,9 @@ export default function APIKeyModal({ isOpen, onClose, onKeysConfigured }: APIKe
                 {/* Current Status */}
                 {status && (
                   <div className="mb-6 space-y-3">
-                    <h3 className="font-semibold text-gray-800">Current Status:</h3>
+                    <h3 className="font-semibold text-gray-800">
+                      Current Status:
+                    </h3>
                     <div className="grid md:grid-cols-2 gap-3">
                       <StatusCard
                         name="Gemini AI"
@@ -224,7 +246,8 @@ export default function APIKeyModal({ isOpen, onClose, onKeysConfigured }: APIKe
                         ? "Close"
                         : "Skip for Now"}
                     </button>
-                    {(!status?.gemini.configured || !status?.sarvam.configured) && (
+                    {(!status?.gemini.configured ||
+                      !status?.sarvam.configured) && (
                       <button
                         type="submit"
                         disabled={loading || (!geminiKey && !sarvamKey)}
@@ -246,8 +269,9 @@ export default function APIKeyModal({ isOpen, onClose, onKeysConfigured }: APIKe
                 {/* Info */}
                 <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                   <p className="text-sm text-blue-800">
-                    <strong>Note:</strong> Your API keys are stored temporarily in memory and are never
-                    saved permanently. You'll need to re-enter them if you restart the server.
+                    <strong>Note:</strong> Your API keys are stored temporarily
+                    in memory and are never saved permanently. You'll need to
+                    re-enter them if you restart the server.
                   </p>
                 </div>
               </>

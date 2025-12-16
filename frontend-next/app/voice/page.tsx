@@ -55,10 +55,12 @@ export default function VoiceAssistantPage() {
 
   const checkAPIKeyStatus = async () => {
     try {
-      const response = await fetch("http://localhost:8001/api/voice/api-keys/status");
+      const response = await fetch(
+        "http://localhost:8001/api/voice/api-keys/status"
+      );
       const data = await response.json();
       setApiKeyStatus(data);
-      
+
       // Show modal if no keys are configured
       if (!data.gemini.configured && !data.sarvam.configured) {
         setShowAPIKeyModal(true);
@@ -105,31 +107,38 @@ export default function VoiceAssistantPage() {
           <p className="text-gray-600">
             Ask questions about your AI detection results
           </p>
-          
+
           {/* API Key Status Banner */}
-          {apiKeyStatus && (!apiKeyStatus.gemini.configured || !apiKeyStatus.sarvam.configured) && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-4 inline-block bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-2"
-            >
-              <p className="text-sm text-yellow-800">
-                ⚠️ {!apiKeyStatus.gemini.configured && "Gemini"}
-                {!apiKeyStatus.gemini.configured && !apiKeyStatus.sarvam.configured && " and "}
-                {!apiKeyStatus.sarvam.configured && "Sarvam"} API key
-                {(!apiKeyStatus.gemini.configured && !apiKeyStatus.sarvam.configured) ? "s" : ""} not configured.
-                Using fallback mode.{" "}
-                <button
-                  onClick={() => setShowAPIKeyModal(true)}
-                  className="underline font-medium hover:text-yellow-900"
-                >
-                  Configure now
-                </button>
-              </p>
-            </motion.div>
-          )}
+          {apiKeyStatus &&
+            (!apiKeyStatus.gemini.configured ||
+              !apiKeyStatus.sarvam.configured) && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-4 inline-block bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-2"
+              >
+                <p className="text-sm text-yellow-800">
+                  ⚠️ {!apiKeyStatus.gemini.configured && "Gemini"}
+                  {!apiKeyStatus.gemini.configured &&
+                    !apiKeyStatus.sarvam.configured &&
+                    " and "}
+                  {!apiKeyStatus.sarvam.configured && "Sarvam"} API key
+                  {!apiKeyStatus.gemini.configured &&
+                  !apiKeyStatus.sarvam.configured
+                    ? "s"
+                    : ""}{" "}
+                  not configured. Using fallback mode.{" "}
+                  <button
+                    onClick={() => setShowAPIKeyModal(true)}
+                    className="underline font-medium hover:text-yellow-900"
+                  >
+                    Configure now
+                  </button>
+                </p>
+              </motion.div>
+            )}
         </motion.div>
-        
+
         {/* API Key Modal */}
         <APIKeyModal
           isOpen={showAPIKeyModal}

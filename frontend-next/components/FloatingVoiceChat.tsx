@@ -47,7 +47,9 @@ export default function FloatingVoiceChat() {
 
   const checkAPIKeyStatus = async () => {
     try {
-      const response = await fetch("http://localhost:8001/api/voice/api-keys/status");
+      const response = await fetch(
+        "http://localhost:8001/api/voice/api-keys/status"
+      );
       const data = await response.json();
       setApiKeyStatus(data);
     } catch (error) {
@@ -103,11 +105,13 @@ export default function FloatingVoiceChat() {
               <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white" />
             )}
             {/* API Key Warning Badge */}
-            {apiKeyStatus && (!apiKeyStatus.gemini.configured || !apiKeyStatus.sarvam.configured) && (
-              <div className="absolute -top-1 -left-1 w-5 h-5 bg-yellow-400 rounded-full border-2 border-white flex items-center justify-center">
-                <AlertCircle className="w-3 h-3 text-yellow-900" />
-              </div>
-            )}
+            {apiKeyStatus &&
+              (!apiKeyStatus.gemini.configured ||
+                !apiKeyStatus.sarvam.configured) && (
+                <div className="absolute -top-1 -left-1 w-5 h-5 bg-yellow-400 rounded-full border-2 border-white flex items-center justify-center">
+                  <AlertCircle className="w-3 h-3 text-yellow-900" />
+                </div>
+              )}
           </motion.button>
         )}
       </AnimatePresence>
@@ -129,7 +133,9 @@ export default function FloatingVoiceChat() {
                     <Bot className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-white font-semibold">Voice Assistant</h3>
+                    <h3 className="text-white font-semibold">
+                      Voice Assistant
+                    </h3>
                     <p className="text-white/80 text-xs">
                       {isConnected
                         ? `Connected • ${
@@ -157,28 +163,33 @@ export default function FloatingVoiceChat() {
                   </button>
                 </div>
               </div>
-              
+
               {/* API Key Warning */}
-              {apiKeyStatus && (!apiKeyStatus.gemini.configured || !apiKeyStatus.sarvam.configured) && (
-                <div className="mt-2 p-2 bg-yellow-400/20 backdrop-blur-sm border border-yellow-300/30 rounded-lg">
-                  <div className="flex items-start gap-2">
-                    <AlertCircle className="w-4 h-4 text-yellow-100 flex-shrink-0 mt-0.5" />
-                    <div className="flex-1">
-                      <p className="text-xs text-yellow-50">
-                        {!apiKeyStatus.gemini.configured && "Gemini"}
-                        {!apiKeyStatus.gemini.configured && !apiKeyStatus.sarvam.configured && " & "}
-                        {!apiKeyStatus.sarvam.configured && "Sarvam"} API not configured.
-                        <button
-                          onClick={() => setShowAPIKeyModal(true)}
-                          className="underline font-medium ml-1 hover:text-white"
-                        >
-                          Setup
-                        </button>
-                      </p>
+              {apiKeyStatus &&
+                (!apiKeyStatus.gemini.configured ||
+                  !apiKeyStatus.sarvam.configured) && (
+                  <div className="mt-2 p-2 bg-yellow-400/20 backdrop-blur-sm border border-yellow-300/30 rounded-lg">
+                    <div className="flex items-start gap-2">
+                      <AlertCircle className="w-4 h-4 text-yellow-100 flex-shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <p className="text-xs text-yellow-50">
+                          {!apiKeyStatus.gemini.configured && "Gemini"}
+                          {!apiKeyStatus.gemini.configured &&
+                            !apiKeyStatus.sarvam.configured &&
+                            " & "}
+                          {!apiKeyStatus.sarvam.configured && "Sarvam"} API not
+                          configured.
+                          <button
+                            onClick={() => setShowAPIKeyModal(true)}
+                            className="underline font-medium ml-1 hover:text-white"
+                          >
+                            Setup
+                          </button>
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
 
             {/* Messages */}

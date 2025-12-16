@@ -2,7 +2,17 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, Loader2, User, Bot, X, Film, Mic, Key, AlertCircle } from "lucide-react";
+import {
+  Upload,
+  Loader2,
+  User,
+  Bot,
+  X,
+  Film,
+  Mic,
+  Key,
+  AlertCircle,
+} from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
 // @ts-ignore
@@ -58,7 +68,9 @@ export default function VideoDetector({ onResult }: VideoDetectorProps) {
 
   const checkAPIKeyStatus = async () => {
     try {
-      const response = await fetch("http://localhost:8001/api/voice/api-keys/status");
+      const response = await fetch(
+        "http://localhost:8001/api/voice/api-keys/status"
+      );
       const data = await response.json();
       setApiKeyStatus(data);
     } catch (error) {
@@ -231,9 +243,12 @@ export default function VideoDetector({ onResult }: VideoDetectorProps) {
                   <Mic className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-800">Ask the AI Assistant</h3>
+                  <h3 className="font-semibold text-gray-800">
+                    Ask the AI Assistant
+                  </h3>
                   <p className="text-sm text-gray-500">
-                    Click "Start Voice Assistant" to ask questions about these results
+                    Click "Start Voice Assistant" to ask questions about these
+                    results
                   </p>
                 </div>
               </div>
@@ -265,27 +280,33 @@ export default function VideoDetector({ onResult }: VideoDetectorProps) {
             </div>
 
             {/* API Key Warning */}
-            {apiKeyStatus && (!apiKeyStatus.gemini.configured || !apiKeyStatus.sarvam.configured) && (
-              <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <div className="flex items-start gap-2">
-                  <AlertCircle className="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-yellow-800">
-                    {!apiKeyStatus.gemini.configured && "Gemini"}
-                    {!apiKeyStatus.gemini.configured && !apiKeyStatus.sarvam.configured && " & "}
-                    {!apiKeyStatus.sarvam.configured && "Sarvam"} API not configured.
-                    <button
-                      onClick={() => setShowAPIKeyModal(true)}
-                      className="underline font-medium ml-1 hover:text-yellow-900"
-                    >
-                      Configure now
-                    </button>
-                  </p>
+            {apiKeyStatus &&
+              (!apiKeyStatus.gemini.configured ||
+                !apiKeyStatus.sarvam.configured) && (
+                <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <AlertCircle className="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-yellow-800">
+                      {!apiKeyStatus.gemini.configured && "Gemini"}
+                      {!apiKeyStatus.gemini.configured &&
+                        !apiKeyStatus.sarvam.configured &&
+                        " & "}
+                      {!apiKeyStatus.sarvam.configured && "Sarvam"} API not
+                      configured.
+                      <button
+                        onClick={() => setShowAPIKeyModal(true)}
+                        className="underline font-medium ml-1 hover:text-yellow-900"
+                      >
+                        Configure now
+                      </button>
+                    </p>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
             <div className="text-sm text-gray-600 mb-4">
-              The AI assistant can explain why the video was detected as AI or human, discuss specific frames, and answer your questions.
+              The AI assistant can explain why the video was detected as AI or
+              human, discuss specific frames, and answer your questions.
             </div>
 
             {isConnected ? (
@@ -294,14 +315,18 @@ export default function VideoDetector({ onResult }: VideoDetectorProps) {
                   <VoiceButton
                     isConnected={isConnected}
                     isListening={isListening}
-                    onClick={() => (isListening ? stopListening() : startListening())}
+                    onClick={() =>
+                      isListening ? stopListening() : startListening()
+                    }
                   />
                   <button
                     onClick={toggleLanguage}
                     className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-xs hover:bg-gray-200 transition-all"
                     title="Toggle Language"
                   >
-                    {currentLanguage === "hi-IN" ? "Switch to English" : "हिंदी में बदलें"}
+                    {currentLanguage === "hi-IN"
+                      ? "Switch to English"
+                      : "हिंदी में बदलें"}
                   </button>
                 </div>
 
@@ -314,25 +339,35 @@ export default function VideoDetector({ onResult }: VideoDetectorProps) {
 
                 <div className="grid grid-cols-2 gap-3">
                   <button
-                    onClick={() => sendTextMessage("Why was this video detected as AI-generated?")}
+                    onClick={() =>
+                      sendTextMessage(
+                        "Why was this video detected as AI-generated?"
+                      )
+                    }
                     className="p-3 text-sm bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg transition-colors text-left"
                   >
                     💭 Why detected as AI?
                   </button>
                   <button
-                    onClick={() => sendTextMessage("How many frames were analyzed?")}
+                    onClick={() =>
+                      sendTextMessage("How many frames were analyzed?")
+                    }
                     className="p-3 text-sm bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-colors text-left"
                   >
                     🎬 Frames analyzed?
                   </button>
                   <button
-                    onClick={() => sendTextMessage("How confident is this detection?")}
+                    onClick={() =>
+                      sendTextMessage("How confident is this detection?")
+                    }
                     className="p-3 text-sm bg-green-50 hover:bg-green-100 text-green-700 rounded-lg transition-colors text-left"
                   >
                     📊 Confidence level?
                   </button>
                   <button
-                    onClick={() => sendTextMessage("Can you explain in simple terms?")}
+                    onClick={() =>
+                      sendTextMessage("Can you explain in simple terms?")
+                    }
                     className="p-3 text-sm bg-orange-50 hover:bg-orange-100 text-orange-700 rounded-lg transition-colors text-left"
                   >
                     💡 Explain simply

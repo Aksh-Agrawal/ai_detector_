@@ -85,7 +85,9 @@ export default function DocumentDetector() {
 
   const checkAPIKeyStatus = async () => {
     try {
-      const response = await fetch("http://localhost:8001/api/voice/api-keys/status");
+      const response = await fetch(
+        "http://localhost:8001/api/voice/api-keys/status"
+      );
       const data = await response.json();
       setApiKeyStatus(data);
     } catch (error) {
@@ -353,7 +355,8 @@ export default function DocumentDetector() {
                   Ask the AI Assistant
                 </h3>
                 <p className="text-sm text-gray-500">
-                  Click "Start Voice Assistant" to ask questions about these results
+                  Click "Start Voice Assistant" to ask questions about these
+                  results
                 </p>
               </div>
             </div>
@@ -405,27 +408,33 @@ export default function DocumentDetector() {
           </div>
 
           {/* API Key Warning */}
-          {apiKeyStatus && (!apiKeyStatus.gemini.configured || !apiKeyStatus.sarvam.configured) && (
-            <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <div className="flex items-start gap-2">
-                <AlertCircle className="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-yellow-800">
-                  {!apiKeyStatus.gemini.configured && "Gemini"}
-                  {!apiKeyStatus.gemini.configured && !apiKeyStatus.sarvam.configured && " & "}
-                  {!apiKeyStatus.sarvam.configured && "Sarvam"} API not configured.
-                  <button
-                    onClick={() => setShowAPIKeyModal(true)}
-                    className="underline font-medium ml-1 hover:text-yellow-900"
-                  >
-                    Configure now
-                  </button>
-                </p>
+          {apiKeyStatus &&
+            (!apiKeyStatus.gemini.configured ||
+              !apiKeyStatus.sarvam.configured) && (
+              <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
+                  <p className="text-sm text-yellow-800">
+                    {!apiKeyStatus.gemini.configured && "Gemini"}
+                    {!apiKeyStatus.gemini.configured &&
+                      !apiKeyStatus.sarvam.configured &&
+                      " & "}
+                    {!apiKeyStatus.sarvam.configured && "Sarvam"} API not
+                    configured.
+                    <button
+                      onClick={() => setShowAPIKeyModal(true)}
+                      className="underline font-medium ml-1 hover:text-yellow-900"
+                    >
+                      Configure now
+                    </button>
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
           <div className="text-sm text-gray-600 mb-4">
-            The AI assistant can explain why the document was detected as AI or human, discuss specific pages, and answer your questions.
+            The AI assistant can explain why the document was detected as AI or
+            human, discuss specific pages, and answer your questions.
           </div>
 
           {isConnected ? (
