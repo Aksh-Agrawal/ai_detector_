@@ -118,7 +118,7 @@ For production use with Redis session storage:
 **Windows:**
 
 ```powershell
-# Download from https://github.com/microsoftarchive/redis/releases
+# Download from https://github.com/Aksh-Agrawal/ai_detector_/microsoftarchive/redis/releases
 # Or use WSL:
 wsl --install
 wsl -d Ubuntu

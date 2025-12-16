@@ -1554,7 +1554,7 @@ Assistant: "इस टेक्स्ट में 82% AI की संभाव
 
 7. **Pipecat Voice Pipeline**
 
-   - URL: https://github.com/pipecat-ai/pipecat
+   - URL: https://github.com/Aksh-Agrawal/ai_detector_/pipecat-ai/pipecat
    - Used for: Real-time voice processing architecture
    - License: Open source
 

@@ -295,7 +295,7 @@ export default function About() {
             </p>
             <div className="flex items-center justify-center gap-6">
               <a
-                href="https://github.com"
+                href="https://github.com/Aksh-Agrawal/ai_detector_"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 hover:text-primary-600 transition-colors"
@@ -304,7 +304,7 @@ export default function About() {
                 GitHub
               </a>
               <a
-                href="mailto:contact@example.com"
+                href="akshagr10@gmail.com"
                 className="flex items-center gap-2 hover:text-primary-600 transition-colors"
               >
                 <Mail className="w-5 h-5" />

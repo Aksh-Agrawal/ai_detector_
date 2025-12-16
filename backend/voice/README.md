@@ -49,7 +49,7 @@ The voice agent is now implemented with:
 
 ```powershell
 # Download from GitHub releases
-https://github.com/microsoftarchive/redis/releases
+https://github.com/Aksh-Agrawal/ai_detector_/microsoftarchive/redis/releases
 
 # Or use Chocolatey
 choco install redis-64

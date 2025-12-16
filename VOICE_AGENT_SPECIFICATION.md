@@ -804,7 +804,7 @@ npm run dev
 
 - **Sarvam AI Docs:** https://docs.sarvam.ai/ (STT/TTS)
 - **Gemini API (FREE):** https://ai.google.dev/
-- **Pipecat:** https://github.com/pipecat-ai/pipecat
+- **Pipecat:** https://github.com/Aksh-Agrawal/ai_detector_/pipecat-ai/pipecat
 - **WebRTC API:** https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API
 - **Google STUN Servers (FREE):** stun:stun.l.google.com:19302
 

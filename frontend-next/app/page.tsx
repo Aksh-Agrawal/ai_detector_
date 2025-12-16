@@ -451,7 +451,7 @@ export default function Home() {
             </p>
             <div className="flex items-center justify-center gap-6">
               <motion.a
-                href="https://github.com"
+                href="https://github.com/Aksh-Agrawal/ai_detector_"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 hover:text-orange-600 transition-colors"
@@ -462,7 +462,7 @@ export default function Home() {
                 GitHub
               </motion.a>
               <motion.a
-                href="mailto:contact@example.com"
+                href="akshagr10@gmail.com"
                 className="flex items-center gap-2 hover:text-orange-600 transition-colors"
                 whileHover={{ scale: 1.1, y: -2 }}
                 whileTap={{ scale: 0.95 }}

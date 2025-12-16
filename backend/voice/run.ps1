@@ -35,7 +35,7 @@ try {
 } catch {
     Write-Host "❌ Redis is not running" -ForegroundColor Red
     Write-Host "Please start Redis first:" -ForegroundColor Yellow
-    Write-Host "  - Download: https://github.com/microsoftarchive/redis/releases" -ForegroundColor White
+    Write-Host "  - Download: https://github.com/Aksh-Agrawal/ai_detector_/microsoftarchive/redis/releases" -ForegroundColor White
     Write-Host "  - Run: redis-server" -ForegroundColor White
     exit 1
 }
