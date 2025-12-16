@@ -17,10 +17,14 @@ CORS(app)  # Enable CORS for frontend access
 # Initialize document processor
 document_processor = DocumentProcessor()
 
+# Get the directory where this script is located
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 ###############################
 # TEXT MODEL
 ###############################
-with open(r"D:\data\id\ai_detector\ai_detector_full\backend\text_model.pkl", "rb") as f:
+MODEL_PATH = os.path.join(BASE_DIR, "text_model.pkl")
+with open(MODEL_PATH, "rb") as f:
     text_model = pickle.load(f)
 
 def detect_text_model(text):
