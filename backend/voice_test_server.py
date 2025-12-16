@@ -166,6 +166,80 @@ async def health():
     }
 
 
+@app.get("/api/voice/api-keys/status")
+async def api_keys_status():
+    """Check which API keys are configured"""
+    return {
+        "gemini": {
+            "configured": GEMINI_AVAILABLE,
+            "required_for": "AI-powered responses and conversation",
+            "get_key_url": "https://ai.google.dev/",
+            "instructions": "1. Visit https://ai.google.dev/\n2. Click 'Get API Key in Google AI Studio'\n3. Create a new API key\n4. Copy and paste below (FREE tier: 2M tokens/min)"
+        },
+        "sarvam": {
+            "configured": SARVAM_AVAILABLE,
+            "required_for": "Indian language voice support (Hindi, Tamil, etc.)",
+            "get_key_url": "https://www.sarvam.ai/",
+            "instructions": "1. Visit https://www.sarvam.ai/\n2. Sign up for an account\n3. Navigate to API section\n4. Generate API key\n5. Copy and paste below"
+        },
+        "fallback_mode": {
+            "gemini": "Mock responses" if not GEMINI_AVAILABLE else None,
+            "sarvam": "Browser speech synthesis" if not SARVAM_AVAILABLE else None
+        }
+    }
+
+
+class SetAPIKeysRequest(BaseModel):
+    gemini_api_key: Optional[str] = None
+    sarvam_api_key: Optional[str] = None
+
+
+@app.post("/api/voice/api-keys/configure")
+async def configure_api_keys(request: SetAPIKeysRequest):
+    """Configure API keys dynamically"""
+    global gemini_client, GEMINI_AVAILABLE, SARVAM_AVAILABLE, SARVAM_API_KEY
+    
+    results = {"success": False, "updated": [], "errors": []}
+    
+    # Configure Gemini
+    if request.gemini_api_key:
+        try:
+            from voice.gemini_client import GeminiClient
+            test_client = GeminiClient(api_key=request.gemini_api_key)
+            gemini_client = test_client
+            GEMINI_AVAILABLE = True
+            os.environ["GEMINI_API_KEY"] = request.gemini_api_key
+            results["updated"].append("gemini")
+            logger.info("Gemini API key configured successfully")
+        except Exception as e:
+            results["errors"].append({"service": "gemini", "error": str(e)})
+            logger.error(f"Failed to configure Gemini: {e}")
+    
+    # Configure Sarvam
+    if request.sarvam_api_key:
+        try:
+            # Validate by checking if key format is correct
+            if len(request.sarvam_api_key) > 10:
+                SARVAM_API_KEY = request.sarvam_api_key
+                SARVAM_AVAILABLE = True
+                os.environ["SARVAM_API_KEY"] = request.sarvam_api_key
+                results["updated"].append("sarvam")
+                logger.info("Sarvam API key configured successfully")
+            else:
+                results["errors"].append({"service": "sarvam", "error": "Invalid key format"})
+        except Exception as e:
+            results["errors"].append({"service": "sarvam", "error": str(e)})
+            logger.error(f"Failed to configure Sarvam: {e}")
+    
+    results["success"] = len(results["updated"]) > 0
+    results["current_status"] = {
+        "gemini": GEMINI_AVAILABLE,
+        "sarvam": SARVAM_AVAILABLE
+    }
+    
+    return results
+
+
 @app.post("/api/voice/session")
 async def create_session(request: CreateSessionRequest):
     """Create a new voice session"""

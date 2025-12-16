@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Loader2, User, Bot, Mic } from "lucide-react";
+import { Send, Loader2, User, Bot, Mic, Key, AlertCircle } from "lucide-react";
 import axios from "axios";
 // @ts-ignore
 import ResultCard from "./ResultCard";
 import VoiceChat from "./VoiceChat";
 import VoiceButton from "./VoiceButton";
+import APIKeyModal from "./APIKeyModal";
 import { useVoiceChat } from "@/hooks/useVoiceChat";
 
 const API_URL = "http://127.0.0.1:8000";
@@ -28,6 +29,8 @@ export default function TextDetector({ onResult }: TextDetectorProps) {
   const [result, setResult] = useState<{ ai: number; human: number } | null>(
     null
   );
+  const [showAPIKeyModal, setShowAPIKeyModal] = useState(false);
+  const [apiKeyStatus, setApiKeyStatus] = useState<any>(null);
 
   // Voice chat integration
   const {
@@ -43,6 +46,21 @@ export default function TextDetector({ onResult }: TextDetectorProps) {
     startListening,
     stopListening,
   } = useVoiceChat();
+
+  // Check API key status
+  useEffect(() => {
+    checkAPIKeyStatus();
+  }, []);
+
+  const checkAPIKeyStatus = async () => {
+    try {
+      const response = await fetch("http://localhost:8001/api/voice/api-keys/status");
+      const data = await response.json();
+      setApiKeyStatus(data);
+    } catch (error) {
+      console.error("Failed to check API key status:", error);
+    }
+  };
 
   const handleDetect = async () => {
     if (!text.trim()) return;
@@ -157,40 +175,73 @@ export default function TextDetector({ onResult }: TextDetectorProps) {
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <Mic className="w-6 h-6 text-pink-500" />
-                <h3 className="text-xl font-semibold text-gray-900">
-                  Ask the AI Assistant
-                </h3>
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-400 to-purple-500 flex items-center justify-center">
+                  <Mic className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-800">Ask the AI Assistant</h3>
+                  <p className="text-sm text-gray-500">
+                    Click "Start Voice Assistant" to ask questions about these results
+                  </p>
+                </div>
               </div>
-              {!isConnected ? (
+              <div className="flex items-center gap-2">
                 <button
-                  onClick={handleStartVoice}
-                  className="px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors"
+                  onClick={() => setShowAPIKeyModal(true)}
+                  className="p-2 text-gray-500 hover:text-pink-500 transition-colors"
+                  title="Configure API Keys"
                 >
-                  Start Voice Assistant
+                  <Key className="w-4 h-4" />
                 </button>
-              ) : (
-                <button
-                  onClick={endSession}
-                  className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
-                >
-                  End Session
-                </button>
-              )}
+                {!isConnected ? (
+                  <button
+                    onClick={handleStartVoice}
+                    className="px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-lg font-medium hover:from-pink-600 hover:to-purple-600 transition-all shadow-md hover:shadow-lg"
+                  >
+                    Start Voice Assistant
+                  </button>
+                ) : (
+                  <button
+                    onClick={endSession}
+                    className="px-3 py-2 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 transition-colors"
+                  >
+                    End
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* API Key Warning */}
+            {apiKeyStatus && (!apiKeyStatus.gemini.configured || !apiKeyStatus.sarvam.configured) && (
+              <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
+                  <p className="text-sm text-yellow-800">
+                    {!apiKeyStatus.gemini.configured && "Gemini"}
+                    {!apiKeyStatus.gemini.configured && !apiKeyStatus.sarvam.configured && " & "}
+                    {!apiKeyStatus.sarvam.configured && "Sarvam"} API not configured.
+                    <button
+                      onClick={() => setShowAPIKeyModal(true)}
+                      className="underline font-medium ml-1 hover:text-yellow-900"
+                    >
+                      Configure now
+                    </button>
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div className="text-sm text-gray-600 mb-4">
+              The AI assistant can explain why the text was detected as AI or human, discuss specific features, and answer your questions.
             </div>
 
             {isConnected ? (
               <div className="space-y-4">
-                <div className="flex items-center gap-4 p-4 bg-green-50 rounded-lg border border-green-200">
-                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                  <p className="text-sm text-green-700">
-                    Voice assistant is ready. Ask questions about the detection
-                    results!
-                  </p>
+                <div className="flex items-center gap-2 justify-between">
                   <VoiceButton
-                    isListening={isListening}
                     isConnected={isConnected}
-                    onClick={isListening ? stopListening : startListening}
+                    isListening={isListening}
+                    onClick={() => (isListening ? stopListening() : startListening())}
                   />
                 </div>
 
@@ -239,22 +290,26 @@ export default function TextDetector({ onResult }: TextDetectorProps) {
                 </div>
               </div>
             ) : (
-              <div className="text-center py-8 text-gray-500">
-                <Mic className="w-12 h-12 mx-auto mb-3 text-gray-400" />
-                <p>
-                  Click "Start Voice Assistant" to ask questions about these
-                  results
-                </p>
-                <p className="text-sm mt-2">
-                  The AI assistant can explain why the text was detected as AI
-                  or human, discuss specific features, and answer your
-                  questions.
+              <div className="text-center py-8">
+                <Mic className="w-16 h-16 mx-auto mb-3 text-gray-300" />
+                <p className="text-gray-500">
+                  Start the voice assistant to discuss these results
                 </p>
               </div>
             )}
           </motion.div>
         </motion.div>
       )}
+
+      {/* API Key Modal */}
+      <APIKeyModal
+        isOpen={showAPIKeyModal}
+        onClose={() => setShowAPIKeyModal(false)}
+        onKeysConfigured={() => {
+          checkAPIKeyStatus();
+          setShowAPIKeyModal(false);
+        }}
+      />
     </div>
   );
 }

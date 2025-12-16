@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Phone, PhoneOff, Languages } from "lucide-react";
+import { Phone, PhoneOff, Languages, Key } from "lucide-react";
 import { useVoiceChat } from "@/hooks/useVoiceChat";
 import VoiceButton from "@/components/VoiceButton";
 import VoiceChat from "@/components/VoiceChat";
+import APIKeyModal from "@/components/APIKeyModal";
 
 const LANGUAGES = [
   { code: "hi-IN", name: "English (India)" },
@@ -24,6 +25,8 @@ const VOICES = [
 export default function VoiceAssistantPage() {
   const [selectedLanguage, setSelectedLanguage] = useState("hi-IN");
   const [selectedVoice, setSelectedVoice] = useState("meera");
+  const [showAPIKeyModal, setShowAPIKeyModal] = useState(false);
+  const [apiKeyStatus, setApiKeyStatus] = useState<any>(null);
 
   const {
     sessionId,
@@ -44,6 +47,26 @@ export default function VoiceAssistantPage() {
       console.error("Voice chat error:", error);
     },
   });
+
+  // Check API key status on mount
+  useEffect(() => {
+    checkAPIKeyStatus();
+  }, []);
+
+  const checkAPIKeyStatus = async () => {
+    try {
+      const response = await fetch("http://localhost:8001/api/voice/api-keys/status");
+      const data = await response.json();
+      setApiKeyStatus(data);
+      
+      // Show modal if no keys are configured
+      if (!data.gemini.configured && !data.sarvam.configured) {
+        setShowAPIKeyModal(true);
+      }
+    } catch (error) {
+      console.error("Failed to check API key status:", error);
+    }
+  };
 
   const handleStartSession = async () => {
     await startSession(selectedLanguage, selectedVoice);
@@ -66,13 +89,56 @@ export default function VoiceAssistantPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">
-            🎙️ Voice Assistant
-          </h1>
+          <div className="flex items-center justify-center gap-4 mb-2">
+            <h1 className="text-4xl font-bold text-gray-800">
+              🎙️ Voice Assistant
+            </h1>
+            <button
+              onClick={() => setShowAPIKeyModal(true)}
+              className="px-4 py-2 bg-orange-100 hover:bg-orange-200 text-orange-700 rounded-lg transition flex items-center gap-2"
+              title="Configure API Keys"
+            >
+              <Key className="w-4 h-4" />
+              API Keys
+            </button>
+          </div>
           <p className="text-gray-600">
             Ask questions about your AI detection results
           </p>
+          
+          {/* API Key Status Banner */}
+          {apiKeyStatus && (!apiKeyStatus.gemini.configured || !apiKeyStatus.sarvam.configured) && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-4 inline-block bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-2"
+            >
+              <p className="text-sm text-yellow-800">
+                ⚠️ {!apiKeyStatus.gemini.configured && "Gemini"}
+                {!apiKeyStatus.gemini.configured && !apiKeyStatus.sarvam.configured && " and "}
+                {!apiKeyStatus.sarvam.configured && "Sarvam"} API key
+                {(!apiKeyStatus.gemini.configured && !apiKeyStatus.sarvam.configured) ? "s" : ""} not configured.
+                Using fallback mode.{" "}
+                <button
+                  onClick={() => setShowAPIKeyModal(true)}
+                  className="underline font-medium hover:text-yellow-900"
+                >
+                  Configure now
+                </button>
+              </p>
+            </motion.div>
+          )}
         </motion.div>
+        
+        {/* API Key Modal */}
+        <APIKeyModal
+          isOpen={showAPIKeyModal}
+          onClose={() => setShowAPIKeyModal(false)}
+          onKeysConfigured={() => {
+            checkAPIKeyStatus();
+            setShowAPIKeyModal(false);
+          }}
+        />
 
         {/* Settings */}
         {!isConnected && (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Upload,
@@ -10,11 +10,14 @@ import {
   File,
   FileCheck,
   Mic,
+  Key,
+  AlertCircle,
 } from "lucide-react";
 import axios from "axios";
 import DocumentResult from "./DocumentResult";
 import VoiceChat from "./VoiceChat";
 import VoiceButton from "./VoiceButton";
+import APIKeyModal from "./APIKeyModal";
 import { useVoiceChat } from "@/hooks/useVoiceChat";
 
 const API_URL = "http://127.0.0.1:8000";
@@ -55,6 +58,8 @@ export default function DocumentDetector() {
   const [result, setResult] = useState<DocumentAnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
+  const [showAPIKeyModal, setShowAPIKeyModal] = useState(false);
+  const [apiKeyStatus, setApiKeyStatus] = useState<any>(null);
 
   // Voice chat integration
   const {
@@ -72,6 +77,21 @@ export default function DocumentDetector() {
     stopListening,
     toggleLanguage,
   } = useVoiceChat();
+
+  // Check API key status
+  useEffect(() => {
+    checkAPIKeyStatus();
+  }, []);
+
+  const checkAPIKeyStatus = async () => {
+    try {
+      const response = await fetch("http://localhost:8001/api/voice/api-keys/status");
+      const data = await response.json();
+      setApiKeyStatus(data);
+    } catch (error) {
+      console.error("Failed to check API key status:", error);
+    }
+  };
 
   const handleFileSelect = (file: File) => {
     // Validate file type
@@ -330,18 +350,21 @@ export default function DocumentDetector() {
               </div>
               <div>
                 <h3 className="text-xl font-bold text-gray-800">
-                  Voice Assistant
+                  Ask the AI Assistant
                 </h3>
-                <p className="text-xs text-gray-500">
-                  {isConnected
-                    ? `Connected • ${
-                        currentLanguage === "hi-IN" ? "🇮🇳 हिंदी" : "🇮🇳 English"
-                      }`
-                    : "Click to start"}
+                <p className="text-sm text-gray-500">
+                  Click "Start Voice Assistant" to ask questions about these results
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowAPIKeyModal(true)}
+                className="p-2 text-gray-500 hover:text-orange-500 transition-colors"
+                title="Configure API Keys"
+              >
+                <Key className="w-4 h-4" />
+              </button>
               {!isConnected && (
                 <>
                   <button
@@ -379,6 +402,30 @@ export default function DocumentDetector() {
                 </>
               )}
             </div>
+          </div>
+
+          {/* API Key Warning */}
+          {apiKeyStatus && (!apiKeyStatus.gemini.configured || !apiKeyStatus.sarvam.configured) && (
+            <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-yellow-800">
+                  {!apiKeyStatus.gemini.configured && "Gemini"}
+                  {!apiKeyStatus.gemini.configured && !apiKeyStatus.sarvam.configured && " & "}
+                  {!apiKeyStatus.sarvam.configured && "Sarvam"} API not configured.
+                  <button
+                    onClick={() => setShowAPIKeyModal(true)}
+                    className="underline font-medium ml-1 hover:text-yellow-900"
+                  >
+                    Configure now
+                  </button>
+                </p>
+              </div>
+            </div>
+          )}
+
+          <div className="text-sm text-gray-600 mb-4">
+            The AI assistant can explain why the document was detected as AI or human, discuss specific pages, and answer your questions.
           </div>
 
           {isConnected ? (
@@ -429,20 +476,25 @@ export default function DocumentDetector() {
               </div>
             </div>
           ) : (
-            <div className="text-center py-8 text-gray-500">
-              <Mic className="w-12 h-12 mx-auto mb-3 text-gray-400" />
-              <p>
-                Click "Start Voice Assistant" to ask questions about these
-                results
-              </p>
-              <p className="text-sm mt-2">
-                The AI assistant can explain why the document was detected as AI
-                or human, discuss specific pages, and answer your questions.
+            <div className="text-center py-8">
+              <Mic className="w-16 h-16 mx-auto mb-3 text-gray-300" />
+              <p className="text-gray-500">
+                Start the voice assistant to discuss these results
               </p>
             </div>
           )}
         </motion.div>
       )}
+
+      {/* API Key Modal */}
+      <APIKeyModal
+        isOpen={showAPIKeyModal}
+        onClose={() => setShowAPIKeyModal(false)}
+        onKeysConfigured={() => {
+          checkAPIKeyStatus();
+          setShowAPIKeyModal(false);
+        }}
+      />
     </div>
   );
 }
